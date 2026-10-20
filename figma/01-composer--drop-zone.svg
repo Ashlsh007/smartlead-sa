@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="Inter, -apple-system, Segoe UI, sans-serif">
+<rect width="1280" height="800" fill="#fbfaff"/>
+<rect x="0" y="0" width="1280" height="56" fill="#1b1b6b"/>
+<rect x="20" y="15" width="26" height="26" rx="7" fill="#6c5ce7"/>
+<text x="27" y="32.96" font-size="13" font-weight="800" fill="#ffffff" text-anchor="start"><tspan x="27" dy="0">S</tspan></text>
+<text x="56" y="32.34" font-size="14.5" font-weight="700" fill="#ffffff" text-anchor="start"><tspan x="56" dy="0">SmartLead</tspan></text>
+<text x="140" y="31.92" font-size="13.5" font-weight="500" fill="#c9c3ff" text-anchor="start"><tspan x="140" dy="0">/ Smart Assistant</tspan></text>
+<rect x="268" y="14" width="116" height="28" rx="8" fill="#2b2b8a" stroke="#4a4ab0" stroke-width="1"/>
+<circle cx="282" cy="28" r="3.5" fill="#57e39b"/>
+<text x="292" y="31.46" font-size="13" font-weight="600" fill="#ffffff" text-anchor="start"><tspan x="292" dy="0">Acme Co</tspan></text>
+<text x="368" y="28.78" font-size="9" font-weight="500" fill="#bdb8ee" text-anchor="start"><tspan x="368" dy="0">▾</tspan></text>
+<text x="1000" y="31.58" font-size="11.5" font-weight="500" fill="#bdb8ee" text-anchor="start"><tspan x="1000" dy="0">Trial · 6 days left</tspan></text>
+<circle cx="1232" cy="28" r="13" fill="#4b3ad1"/>
+<text x="1225" y="30.700000000000003" font-size="10" font-weight="700" fill="#ffffff" text-anchor="start"><tspan x="1225" dy="0">PS</tspan></text>
+<rect x="0" y="56" width="56" height="744" fill="#ffffff"/>
+<line x1="56" y1="56" x2="56" y2="800" stroke="#e7e5f2" stroke-width="1"/>
+<rect x="21" y="78" width="14" height="12" rx="3" fill="#e4dfff"/>
+<rect x="21" y="118" width="14" height="12" rx="3" fill="#e4dfff"/>
+<rect x="21" y="158" width="14" height="12" rx="3" fill="#e4dfff"/>
+<rect x="21" y="198" width="14" height="12" rx="3" fill="#e4dfff"/>
+<rect x="15" y="70" width="26" height="26" rx="8" fill="#efecff"/>
+<rect x="23" y="78" width="10" height="10" rx="2.5" fill="#6c5ce7"/>
+<line x1="20" y1="232" x2="36" y2="232" stroke="#e7e5f2" stroke-width="1"/>
+<rect x="21" y="250" width="14" height="14" rx="4" fill="none" stroke="#a5a2bb" stroke-width="1.4"/>
+<rect x="56" y="56" width="196" height="744" fill="#fdfdff"/>
+<line x1="252" y1="56" x2="252" y2="800" stroke="#e7e5f2" stroke-width="1"/>
+<text x="76" y="82.74" font-size="9.5" font-weight="800" fill="#a5a2bb" text-anchor="start" letter-spacing="1.1"><tspan x="76" dy="0">ENGAGE</tspan></text>
+<rect x="78" y="98" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="107.96000000000001" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Prospect Finder</tspan></text>
+<rect x="78" y="126" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="135.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Campaigns</tspan></text>
+<rect x="78" y="154" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="163.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Master Inbox</tspan></text>
+<rect x="78" y="182" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="191.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Sender Accounts</tspan></text>
+<text x="76" y="224.74" font-size="9.5" font-weight="800" fill="#a5a2bb" text-anchor="start" letter-spacing="1.1"><tspan x="76" dy="0">AI TEAM</tspan></text>
+<rect x="66" y="231" width="176" height="28" rx="8" fill="#efecff"/>
+<rect x="78" y="239" width="9" height="9" rx="2" fill="#6c5ce7"/>
+<text x="96" y="249.96" font-size="13" font-weight="700" fill="#3a1fc4" text-anchor="start"><tspan x="96" dy="0">AI Assistant</tspan></text>
+<rect x="78" y="270" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="279.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">AI Agents</tspan></text>
+<rect x="78" y="298" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="307.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Automations</tspan></text>
+<rect x="206" y="297" width="30" height="14" rx="5" fill="#eceaf7"/>
+<text x="210" y="306.36" font-size="8" font-weight="800" fill="#6f6c8c" text-anchor="start"><tspan x="210" dy="0">BETA</tspan></text>
+<text x="76" y="340.74" font-size="9.5" font-weight="800" fill="#a5a2bb" text-anchor="start" letter-spacing="1.1"><tspan x="76" dy="0">RECENTS</tspan></text>
+<rect x="78" y="356" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="365.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Import · Q3 Enterprise</tspan></text>
+<rect x="78" y="384" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="393.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Reply rate drop · Acme</tspan></text>
+<text x="76" y="426.74" font-size="9.5" font-weight="800" fill="#a5a2bb" text-anchor="start" letter-spacing="1.1"><tspan x="76" dy="0">INBOX HEALTH</tspan></text>
+<rect x="78" y="442" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="451.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Sending Servers</tspan></text>
+<text x="76" y="484.74" font-size="9.5" font-weight="800" fill="#a5a2bb" text-anchor="start" letter-spacing="1.1"><tspan x="76" dy="0">PIPELINE</tspan></text>
+<rect x="78" y="500" width="8" height="8" rx="2" fill="none" stroke="#a5a2bb" stroke-width="1.2"/>
+<text x="96" y="509.96" font-size="13" font-weight="500" fill="#494968" text-anchor="start"><tspan x="96" dy="0">Deals</tspan></text>
+<rect x="252" y="56" width="1028" height="56" fill="#ffffff"/>
+<line x1="252" y1="112" x2="1280" y2="112" stroke="#e7e5f2" stroke-width="1"/>
+<text x="274" y="86.88" font-size="14" font-weight="700" fill="#14142b" text-anchor="start"><tspan x="274" dy="0">Smart Assistant</tspan></text>
+<text x="382" y="86.0" font-size="12.5" font-weight="400" fill="#7c7c99" text-anchor="start"><tspan x="382" dy="0">/ Acme Co</tspan></text>
+<rect x="1020" y="70" width="148" height="28" rx="9" fill="#f2f0fa" stroke="#e7e5f2" stroke-width="1"/>
+<rect x="1094" y="73" width="71" height="22" rx="7" fill="#ffffff" stroke="#e7e5f2" stroke-width="1"/>
+<text x="1036" y="87.08" font-size="11.5" font-weight="700" fill="#6f6c8c" text-anchor="start"><tspan x="1036" dy="0">Today</tspan></text>
+<text x="1106" y="87.08" font-size="11.5" font-weight="700" fill="#1b1b6b" text-anchor="start"><tspan x="1106" dy="0">Proposed</tspan></text>
+<rect x="1178" y="70" width="78" height="28" rx="9" fill="#ffffff" stroke="#e7e5f2" stroke-width="1"/>
+<text x="1190" y="86.58" font-size="11.5" font-weight="700" fill="#494968" text-anchor="start"><tspan x="1190" dy="0">✦ Memory</tspan></text>
+<text x="430" y="315.64" font-size="17" font-weight="700" fill="#14142b" text-anchor="start"><tspan x="430" dy="0">What are we getting done today?</tspan></text>
+<text x="372" y="339.5" font-size="12.5" font-weight="400" fill="#7c7c99" text-anchor="start"><tspan x="372" dy="0">I can work inside Acme Co — import leads, build campaigns, pause sends,</tspan><tspan x="372" dy="19">set up agents. I'll show every step and you can undo any of it.</tspan></text>
+<rect x="276" y="548" width="144.0" height="28" rx="14" fill="#6c5ce7"/>
+<text x="287" y="565.58" font-size="11.5" font-weight="700" fill="#ffffff" text-anchor="start"><tspan x="287" dy="0">✦ Import a lead list</tspan></text>
+<rect x="428.0" y="548" width="150.4" height="28" rx="14" fill="#f7f5ff" stroke="#e4dfff" stroke-width="1"/>
+<text x="439.0" y="565.58" font-size="11.5" font-weight="600" fill="#4222c9" text-anchor="start"><tspan x="439.0" dy="0">Create a new campaign</tspan></text>
+<rect x="586.4" y="548" width="144.0" height="28" rx="14" fill="#f7f5ff" stroke="#e4dfff" stroke-width="1"/>
+<text x="597.4" y="565.58" font-size="11.5" font-weight="600" fill="#4222c9" text-anchor="start"><tspan x="597.4" dy="0">Check deliverability</tspan></text>
+<rect x="738.4" y="548" width="144.0" height="28" rx="14" fill="#f7f5ff" stroke="#e4dfff" stroke-width="1"/>
+<text x="749.4" y="565.58" font-size="11.5" font-weight="600" fill="#4222c9" text-anchor="start"><tspan x="749.4" dy="0">Set up a Smart Agent</tspan></text>
+<line x1="252" y1="588" x2="1280" y2="588" stroke="#e7e5f2" stroke-width="1"/>
+<rect x="252" y="600" width="1028" height="200" fill="#ffffff"/>
+<rect x="276" y="610" width="964" height="44" rx="13" fill="#ffffff" stroke="#e7e5f2" stroke-width="1"/>
+<text x="316" y="634.42" font-size="13.5" font-weight="400" fill="#a5a2bb" text-anchor="start"><tspan x="316" dy="0">Ask SmartAssistant anything… or drop a CSV</tspan></text>
+<path d="M 296 626 l 5 -5 a 3.4 3.4 0 0 1 4.8 4.8 l -6.4 6.4 a 5.4 5.4 0 0 1 -7.6 -7.6 l 6 -6" fill="none" stroke="#8c89a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1184" y="620" width="8" height="14" rx="4" fill="none" stroke="#8c89a6" stroke-width="1.4"/>
+<line x1="1188" y1="636" x2="1188" y2="640" stroke="#8c89a6" stroke-width="1.4"/>
+<circle cx="1210" cy="632" r="14" fill="#6c5ce7"/>
+<path d="M 1210 626 l 0 12 M 1206 630 l 4 -4 l 4 4" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="276" y="662" width="964" height="86" rx="12" fill="#f7f5ff" stroke="#c9bbff" stroke-width="1.5"/>
+<text x="300" y="690.42" font-size="13.5" font-weight="700" fill="#3a1fc4" text-anchor="start"><tspan x="300" dy="0">Drop a CSV or paste leads</tspan></text>
+<text x="300" y="709.04" font-size="12" font-weight="400" fill="#5b4fa8" text-anchor="start"><tspan x="300" dy="0">We'll map the columns, check for duplicates, and show every step before anything is saved.</tspan></text>
+<rect x="300" y="718" width="118" height="24" rx="7" fill="#6c5ce7"/>
+<text x="313" y="733.12" font-size="11" font-weight="700" fill="#ffffff" text-anchor="start"><tspan x="313" dy="0">Choose a file</tspan></text>
+<rect x="426" y="718" width="152" height="24" rx="7" fill="#ffffff" stroke="#e7e5f2" stroke-width="1"/>
+<text x="439" y="733.12" font-size="11" font-weight="600" fill="#14142b" text-anchor="start"><tspan x="439" dy="0">Paste from clipboard</tspan></text>
+</svg>

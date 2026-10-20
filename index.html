@@ -1,0 +1,1753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236c4bf5'/%3E%3Ctext x='16' y='23' font-size='19' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<title>Smart Assistant — Direction, Prioritisation & Prototype</title>
+<style>
+:root{
+  --indigo:#1b1b6b; --indigo-2:#26268a; --indigo-3:#3a3aa8;
+  --purple:#6c5ce7; --purple-2:#8b74ee; --purple-3:#a897f5;
+  --lav:#efecff; --lav-2:#f7f5ff; --lav-3:#e4dfff;
+  --ink:#14142b; --ink-2:#494968; --ink-3:#7c7c99;
+  --line:#e7e5f2; --line-2:#f0eef8;
+  --bg:#fbfaff; --white:#fff;
+  --warn:#fff8e1; --warn-2:#fdefc7; --warn-ink:#7a5a00;
+  --ok:#0e9d5c; --ok-bg:#e7f7ee;
+  --danger:#d92d20; --danger-bg:#fdecea;
+  --shadow-sm:0 1px 2px rgba(20,20,43,.05), 0 1px 3px rgba(20,20,43,.04);
+  --shadow-md:0 4px 12px rgba(20,20,43,.07), 0 2px 4px rgba(20,20,43,.04);
+  --shadow-lg:0 18px 50px rgba(20,20,43,.13);
+  --r:14px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);
+  -webkit-font-smoothing:antialiased;font-size:15.5px;line-height:1.62;
+}
+a{color:var(--purple);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:inherit;cursor:pointer}
+
+/* ---------- app chrome ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;background:var(--indigo);
+  display:flex;align-items:center;gap:22px;padding:0 22px;height:56px;
+  box-shadow:0 1px 0 rgba(255,255,255,.08), 0 6px 18px rgba(27,27,107,.18);
+}
+.brand{font-weight:700;letter-spacing:-.02em;font-size:17px;color:#fff;display:flex;align-items:center;gap:9px}
+.brand .mark{
+  width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--purple-2),#5b3df0);
+  display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.18) inset;
+}
+.brand span{color:#c9c3ff;font-weight:500}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tab{
+  background:transparent;border:0;color:#c5c1ee;font-size:13.5px;font-weight:500;
+  padding:8px 14px;border-radius:9px;transition:.16s;
+}
+.tab:hover{background:rgba(255,255,255,.08);color:#fff}
+.tab.active{background:rgba(255,255,255,.14);color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.12) inset}
+.topbar .meta{margin-left:auto;color:#9d98d6;font-size:12px;letter-spacing:.02em}
+
+/* ---------- report ---------- */
+.wrap{max-width:1220px;margin:0 auto;padding:0 26px}
+.report{display:grid;grid-template-columns:224px minmax(0,1fr);gap:52px;padding:44px 0 100px}
+.toc{position:sticky;top:88px;align-self:start;font-size:12.5px}
+.toc .toc-h{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin:0 0 12px}
+.toc ol{list-style:none;margin:0;padding:0;counter-reset:toc}
+.toc li{counter-increment:toc;margin:0 0 2px}
+.toc a{display:block;padding:6px 10px;border-radius:8px;color:var(--ink-2);line-height:1.35;border-left:2px solid transparent}
+.toc a:hover{background:var(--lav-2);text-decoration:none;color:var(--ink)}
+.toc a::before{content:counter(toc) ". ";color:var(--ink-3);font-variant-numeric:tabular-nums}
+.toc .sub a{padding-left:22px;font-size:12px;color:var(--ink-3)}
+.toc .sub a::before{content:""}
+
+/* cover */
+.cover{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);margin-bottom:44px}
+.cover-top{background:linear-gradient(120deg,#1b1b6b 0%,#2b2b8f 55%,#4b32c9 100%);padding:38px 40px 34px;color:#fff;position:relative;overflow:hidden}
+.cover-top::after{
+  content:"";position:absolute;right:-70px;top:-90px;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(168,145,255,.55),rgba(168,145,255,0) 70%);
+}
+.cover-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#b9b2f5;font-weight:700;margin:0 0 14px}
+.cover h1{font-size:36px;line-height:1.12;margin:0 0 14px;letter-spacing:-.025em;font-weight:750;max-width:19ch}
+.cover h1 em{font-style:normal;color:#c9bbff}
+.cover .sub{color:#cfcaf4;font-size:15px;max-width:62ch;margin:0}
+.cover-bot{display:flex;flex-wrap:wrap;gap:36px;padding:20px 40px;background:var(--lav-2);border-top:1px solid var(--line);font-size:12.5px}
+.cover-bot div span{display:block;color:var(--ink-3);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.cover-bot div strong{font-weight:600;color:var(--ink)}
+
+/* section */
+section.sec{padding-top:14px;margin-bottom:52px;scroll-margin-top:78px}
+.sec-n{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--purple);font-weight:800;margin:0 0 8px}
+h2{font-size:26px;line-height:1.2;letter-spacing:-.02em;margin:0 0 16px;font-weight:730}
+h3{font-size:16.5px;letter-spacing:-.01em;margin:34px 0 10px;font-weight:700}
+h4{font-size:13px;letter-spacing:.02em;margin:0 0 6px;font-weight:700}
+p{margin:0 0 14px;color:var(--ink-2)}
+p.lede{font-size:17px;color:var(--ink);line-height:1.6}
+strong{color:var(--ink);font-weight:650}
+ul,ol{margin:0 0 16px;padding-left:20px;color:var(--ink-2)}
+li{margin:0 0 7px}
+hr.rule{border:0;border-top:1px solid var(--line);margin:34px 0}
+
+blockquote.voice{
+  margin:18px 0;padding:14px 18px;background:var(--lav-2);border-left:3px solid var(--purple);
+  border-radius:0 10px 10px 0;font-size:15px;color:var(--ink);font-style:italic;
+}
+blockquote.voice cite{display:block;font-style:normal;font-size:12px;color:var(--ink-3);margin-top:7px}
+
+/* cards */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow-sm)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* wall */
+.wall{border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:var(--shadow-md);overflow:hidden}
+.wall-head{padding:26px 30px 22px;background:linear-gradient(180deg,#fff, #faf8ff);border-bottom:1px solid var(--line)}
+.wall-head .k{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+.wall-head h2{margin:10px 0 0;font-size:30px;max-width:26ch}
+.wall-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+.wall-cell{padding:22px 30px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.wall-cell:nth-child(2n){border-right:0}
+.wall-cell:nth-last-child(-n+2){border-bottom:0}
+.wall-cell .t{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--purple);margin-bottom:8px}
+.wall-cell p{margin:0;font-size:14.5px;color:var(--ink-2)}
+.wall-cell .big{font-size:30px;font-weight:750;letter-spacing:-.03em;color:var(--ink);line-height:1.1;display:block;margin-bottom:6px;font-variant-numeric:tabular-nums}
+@media(max-width:820px){.wall-grid{grid-template-columns:1fr}.wall-cell{border-right:0}}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:var(--shadow-sm);margin:18px 0}
+table.tbl{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+table.tbl th{
+  text-align:left;background:var(--lav-2);color:var(--ink-2);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:800;padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+table.tbl td{padding:12px 14px;border-bottom:1px solid var(--line-2);vertical-align:top;color:var(--ink-2)}
+table.tbl tr:last-child td{border-bottom:0}
+table.tbl td strong{color:var(--ink)}
+table.tbl th:first-child,table.tbl td:first-child{min-width:200px}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.02em}
+.tag.p0{background:#e6f0ff;color:#0b4fd1}
+.tag.p1{background:var(--lav-3);color:#4222c9}
+.tag.p2{background:#f1f0f7;color:#5c5c74}
+.tag.no{background:#f4f4f8;color:#8b8ba3}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+
+/* rice bar */
+.bar-row{display:grid;grid-template-columns:210px 1fr 52px;gap:12px;align-items:center;margin-bottom:9px;font-size:13px}
+.bar-track{height:22px;background:var(--line-2);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--purple),var(--purple-2));display:block}
+.bar-fill.muted{background:linear-gradient(90deg,#c9c7d8,#dcdae8)}
+.bar-fill.flag{background:linear-gradient(90deg,#e8a300,#f5c542)}
+.bar-row .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+@media(max-width:700px){.bar-row{grid-template-columns:1fr 60px}.bar-row .lab{grid-column:1/-1}}
+
+/* pain block */
+.pain{border:1px solid var(--line);border-radius:var(--r);background:#fff;box-shadow:var(--shadow-sm);margin-bottom:18px;overflow:hidden}
+.pain-h{display:flex;align-items:center;gap:12px;padding:15px 20px;background:linear-gradient(180deg,#fff,#fbfaff);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pain-h .idx{width:26px;height:26px;border-radius:8px;background:var(--indigo);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+.pain-h h3{margin:0;font-size:16px;border:0;flex:1;min-width:180px}
+.pain-b{padding:18px 20px 6px}
+.pain-row{display:grid;grid-template-columns:118px 1fr;gap:16px;padding:11px 0;border-bottom:1px dashed var(--line-2);font-size:14px}
+.pain-row:last-child{border-bottom:0}
+.pain-row .lab{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--ink-3);padding-top:3px}
+.pain-row .val{color:var(--ink-2)}
+.pain-row .val strong{color:var(--ink)}
+@media(max-width:640px){.pain-row{grid-template-columns:1fr;gap:4px}}
+
+/* day-in-the-life */
+.day{background:linear-gradient(180deg,#1b1b6b,#2a2a86);color:#e6e3ff;border-radius:13px;padding:18px 20px;margin:18px 20px;box-shadow:var(--shadow-md)}
+.day .who{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#b7aff0;font-weight:800;margin-bottom:10px}
+.day p{color:#dcd8fb;margin:0 0 10px;font-size:14px}
+.day p:last-child{margin:0}
+.day .t{color:#a891ff;font-family:var(--mono);font-size:12px;font-weight:700;margin-right:7px}
+.day em{color:#fff;font-style:normal;background:rgba(168,145,255,.18);padding:0 4px;border-radius:4px}
+
+/* callouts */
+.callout{border-radius:12px;padding:16px 18px;margin:18px 0;font-size:14.5px;border:1px solid}
+.callout .ct{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;margin-bottom:6px}
+.callout p{margin:0;color:inherit;font-size:14.5px}
+.callout.warn{background:var(--warn);border-color:var(--warn-2)}.callout.warn .ct{color:var(--warn-ink)}.callout.warn p{color:#6b4f00}
+.callout.info{background:var(--lav-2);border-color:var(--lav-3)}.callout.info .ct{color:var(--purple)}
+.callout.ink{background:#f5f5f9;border-color:#e3e2ec}
+.callout.ink .ct{color:var(--ink-3)}
+
+/* step list */
+.steps{list-style:none;padding:0;margin:16px 0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 0 38px;margin-bottom:14px;color:var(--ink-2);font-size:14.5px}
+.steps li::before{
+  content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+  background:var(--lav);color:var(--purple);font-size:11.5px;font-weight:800;display:grid;place-items:center;border:1px solid var(--lav-3);
+}
+.steps li strong{display:block;color:var(--ink)}
+
+/* phase */
+.phase{border:1px solid var(--line);border-radius:var(--r);background:#fff;box-shadow:var(--shadow-sm);padding:20px;position:relative;overflow:hidden}
+.phase::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--purple)}
+.phase.p2::before{background:var(--indigo-3)}
+.phase.p3::before{background:var(--purple-3)}
+.phase .wk{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:var(--purple);margin-bottom:6px}
+.phase h3{margin:0 0 4px;font-size:17px}
+.phase .loop{font-size:12.5px;color:var(--ink-3);margin-bottom:12px;font-weight:600}
+.phase ul{padding-left:17px;font-size:13.5px;margin-bottom:12px}
+.phase .cut{font-size:12.5px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:10px;margin-top:2px}
+.phase .cut b{color:var(--ink-2)}
+
+/* metric */
+.metric-hero{background:linear-gradient(120deg,#1b1b6b,#3d2bb0);border-radius:16px;padding:26px 28px;color:#fff;box-shadow:var(--shadow-md)}
+.metric-hero .k{font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:#b9b2f5;font-weight:800}
+.metric-hero .def{font-size:14.5px;color:#d7d3f7;margin:10px 0 20px;max-width:66ch}
+.ladder{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.16);border-radius:12px;overflow:hidden}
+.ladder>div{background:rgba(255,255,255,.06);padding:16px 18px}
+.ladder .v{font-size:32px;font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.ladder .l{font-size:11.5px;color:#bfb9f2;margin-top:6px;letter-spacing:.02em}
+@media(max-width:700px){.ladder{grid-template-columns:1fr}}
+
+/* misc */
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--lav);color:#4222c9;border:1px solid var(--lav-3);border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700}
+.small{font-size:12.5px;color:var(--ink-3)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;font-size:14px}
+.kv dt{font-weight:700;color:var(--ink);font-size:12.5px;letter-spacing:.02em}
+.kv dd{margin:0 0 10px;color:var(--ink-2)}
+.footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* ---------- PROTOTYPE ---------- */
+.proto-shell{padding:26px 0 90px}
+.proto-intro{display:flex;justify-content:space-between;gap:30px;align-items:flex-end;margin-bottom:20px;flex-wrap:wrap}
+.proto-intro h2{margin:6px 0 6px}
+.proto-note{font-size:12.5px;color:var(--ink-3);max-width:44ch}
+.proto-frame{border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid #d9d5ee;background:#fff}
+.pl-top{height:52px;background:var(--indigo);display:flex;align-items:center;padding:0 16px;gap:14px;color:#fff}
+.pl-top .lg{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--purple-2),#5b3df0);display:grid;place-items:center;font-weight:800;font-size:13px}
+.pl-ws{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;background:rgba(255,255,255,.1);padding:5px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.14)}
+.pl-ws .dot{width:7px;height:7px;border-radius:50%;background:#57e39b}
+.pl-top .right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px;color:#bdb8ee}
+.pl-avatar{width:26px;height:26px;border-radius:50%;background:#4b3ad1;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.pl-body{display:flex;min-height:660px}
+.pl-rail{width:56px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px}
+.pl-rail .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#9a97b3;font-size:15px}
+.pl-rail .ic.on{background:var(--lav);color:var(--purple)}
+.pl-rail .ic.sep{margin-top:14px;border-top:1px solid var(--line);width:26px;height:1px;border-radius:0}
+.pl-nav{width:196px;background:#fdfdff;border-right:1px solid var(--line);padding:14px 10px;font-size:13px}
+.pl-nav .grp{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#a5a2bb;font-weight:800;padding:12px 10px 6px}
+.pl-nav .it{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;color:#4c4c66;font-weight:500;margin-bottom:1px}
+.pl-nav .it.on{background:var(--lav);color:#3a1fc4;font-weight:700}
+.pl-nav .it .b{margin-left:auto;font-size:9.5px;background:#eceaf7;color:#6f6c8c;padding:1px 6px;border-radius:5px;font-weight:700}
+.pl-chat{flex:1;display:flex;flex-direction:column;background:#fff;min-width:0}
+.pl-chat-h{height:56px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 18px;flex:none}
+.pl-chat-h .ttl{font-size:14px;font-weight:700}
+.pl-chat-h .ttl span{font-weight:400;color:var(--ink-3);font-size:12.5px;margin-left:6px}
+.pl-mode{margin-left:auto;display:flex;background:#f2f0fa;border-radius:9px;padding:3px;gap:2px;border:1px solid var(--line)}
+.pl-mode button{border:0;background:transparent;font-size:11.5px;font-weight:700;color:#6f6c8c;padding:5px 11px;border-radius:7px;letter-spacing:.01em}
+.pl-mode button.on{background:#fff;color:var(--indigo);box-shadow:var(--shadow-sm)}
+.pl-mode button.on.today{background:#fdf1ef;color:#a4271c}
+.pl-membtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:700;color:#4c4c66;display:flex;align-items:center;gap:6px}
+.pl-membtn:hover{border-color:var(--lav-3);background:var(--lav-2)}
+.pl-thread{flex:1;overflow-y:auto;padding:22px 26px 8px;display:flex;flex-direction:column;gap:18px;max-height:520px;scroll-behavior:smooth}
+.pl-empty{text-align:center;padding:34px 20px 10px;color:var(--ink-3)}
+.pl-empty .big{font-size:17px;color:var(--ink);font-weight:700;margin-bottom:6px}
+.pl-empty p{font-size:13.5px;max-width:44ch;margin:0 auto}
+.msg{display:flex;gap:11px;max-width:760px}
+.msg .av{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:12px;font-weight:800}
+.msg.bot .av{background:linear-gradient(135deg,var(--purple),#5b3df0);color:#fff}
+.msg.user{flex-direction:row-reverse;align-self:flex-end}
+.msg.user .av{background:#e9e7f5;color:#5b5b78}
+.bub{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 15px;font-size:14px;color:var(--ink-2);box-shadow:var(--shadow-sm)}
+.msg.user .bub{background:var(--lav);border-color:var(--lav-3);color:#2f2a5e}
+.bub p{margin:0 0 9px;font-size:14px;color:inherit}
+.bub p:last-child{margin:0}
+.bub .meta-line{font-size:12px;color:var(--ink-3);margin-top:8px}
+
+/* file card */
+.filecard{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-top:2px;box-shadow:var(--shadow-sm)}
+.filecard .fico{width:32px;height:32px;border-radius:8px;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.filecard .fname{font-size:13px;font-weight:700;color:var(--ink)}
+.filecard .fsub{font-size:11.5px;color:var(--ink-3)}
+
+/* run log */
+.runlog{border:1px solid var(--line);border-radius:12px;margin-top:4px;overflow:hidden;background:#fff;box-shadow:var(--shadow-sm)}
+.runlog-h{display:flex;align-items:center;gap:9px;padding:11px 14px;background:#faf9ff;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--ink)}
+.runlog-h .live{width:7px;height:7px;border-radius:50%;background:var(--purple);animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+.runlog-h .done-lab{margin-left:auto;font-size:11px;color:var(--ok);font-weight:800}
+.rstep{display:grid;grid-template-columns:22px 1fr auto;gap:11px;padding:10px 14px;align-items:start;border-bottom:1px solid var(--line-2);cursor:pointer}
+.rstep:last-child{border-bottom:0}
+.rstep:hover{background:#fcfbff}
+.rstep .glyph{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:800;margin-top:1px;border:1.5px solid #d6d3e6;color:#b3b0c7;background:#fff}
+.rstep.done .glyph{background:var(--ok);border-color:var(--ok);color:#fff}
+.rstep.active .glyph{border-color:var(--purple);color:var(--purple)}
+.rstep.active .glyph::after{content:"";width:8px;height:8px;border-radius:50%;border:2px solid var(--purple);border-top-color:transparent;animation:spin .7s linear infinite}
+.rstep.active .glyph .tick{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rstep .sl{font-size:13px;font-weight:600;color:var(--ink)}
+.rstep.pending .sl{color:#a5a2bb;font-weight:500}
+.rstep .sd{font-size:12px;color:var(--ink-3);margin-top:2px}
+.rstep .chev{font-size:10px;color:#b3b0c7;margin-top:4px}
+.rstep .detail{grid-column:2/4;display:none;margin-top:9px;font-size:12px;color:var(--ink-2);background:#faf9ff;border:1px solid var(--line-2);border-radius:8px;padding:9px 11px}
+.rstep.open .detail{display:block}
+.rstep .detail table{border-collapse:collapse;width:100%;font-size:11.5px}
+.rstep .detail td{padding:3px 0;border-bottom:1px dotted var(--line);color:var(--ink-2)}
+.rstep .detail td:last-child{text-align:right;font-family:var(--mono);font-size:11px;color:#5b5b78}
+.rstep .detail tr:last-child td{border-bottom:0}
+
+/* summary */
+.summary{border:1px solid #cfe9db;border-radius:12px;background:linear-gradient(180deg,#f6fdf9,#fff);padding:15px 16px;margin-top:12px;box-shadow:var(--shadow-sm)}
+.summary .sh{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:750;color:#0b6b40;margin-bottom:10px}
+.summary .sh .ok-ic{width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:11px}
+.summary .stats{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-bottom:14px}
+.summary .stats b{color:var(--ink);font-variant-numeric:tabular-nums}
+.summary .stats .muted-c{color:#9a97b3}
+.summary .acts{display:flex;gap:9px;flex-wrap:wrap}
+.btn{border-radius:9px;font-size:12.5px;font-weight:700;padding:8px 14px;border:1px solid var(--line);background:#fff;color:var(--ink);display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:#faf9ff;border-color:var(--lav-3)}
+.btn.primary{background:var(--purple);border-color:var(--purple);color:#fff}
+.btn.primary:hover{background:#5b3df0}
+.btn.ghost-danger{color:var(--danger);border-color:#f6d7d4;background:#fff}
+.btn.ghost-danger:hover{background:var(--danger-bg)}
+.btn.sm{padding:6px 11px;font-size:11.5px}
+
+/* guide mode */
+.guidecard{border:1px solid #f0dcd8;background:#fffaf9;border-radius:12px;padding:14px 16px;margin-top:4px}
+.guidecard ol{margin:8px 0 10px;padding-left:20px;font-size:13.5px;color:#4a4a68}
+.guidecard ol li{margin-bottom:5px}
+.guidecard .gm{font-size:12px;color:#a4271c;background:#fdecea;border:1px solid #f6d7d4;border-radius:7px;padding:4px 9px;display:inline-block;font-weight:700}
+.guidecard .q{font-size:12.5px;color:#7c7c99;margin-top:9px;font-style:italic}
+
+/* composer */
+.pl-composer{border-top:1px solid var(--line);padding:12px 20px 16px;background:#fff;flex:none}
+.pl-chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--lav-3);background:var(--lav-2);color:#4222c9;border-radius:999px;font-size:12px;font-weight:600;padding:6px 12px;transition:.15s}
+.chip:hover{background:var(--lav);border-color:#c9bbff;transform:translateY(-1px)}
+.chip.primary{background:var(--purple);border-color:var(--purple);color:#fff}
+.chip.primary:hover{background:#5b4bd6;color:#fff}
+.pl-inputrow{display:flex;align-items:flex-end;gap:9px;border:1px solid var(--line);border-radius:13px;padding:8px 8px 8px 12px;background:#fff;box-shadow:var(--shadow-sm)}
+.pl-inputrow textarea{flex:1;border:0;outline:0;resize:none;font-family:inherit;font-size:14px;color:var(--ink);height:24px;max-height:120px;background:transparent;padding:3px 0}
+.pl-inputrow textarea::placeholder{color:#a5a2bb}
+.icobtn{width:32px;height:32px;border-radius:9px;border:0;background:transparent;color:#8c89a6;display:grid;place-items:center;font-size:15px}
+.icobtn:hover{background:#f3f1fb;color:var(--purple)}
+.sendbtn{width:32px;height:32px;border-radius:50%;background:var(--purple);border:0;color:#fff;display:grid;place-items:center;font-size:13px;flex:none}
+.sendbtn:hover{background:#5b3df0}
+.dropzone{margin-top:10px;border:1.5px dashed #c9bbff;border-radius:12px;background:var(--lav-2);padding:16px;text-align:center;font-size:13px;color:#5b4fa8;display:none}
+.dropzone.show{display:block;animation:fade .2s ease}
+.dropzone.over{background:var(--lav);border-color:var(--purple)}
+.dropzone b{display:block;font-size:13.5px;color:#3a1fc4;margin-bottom:2px}
+.dropzone .picks{margin-top:9px;display:flex;gap:8px;justify-content:center}
+@keyframes fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,20,43,.34);opacity:0;pointer-events:none;transition:.22s;z-index:80;backdrop-filter:blur(2px)}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;height:100%;width:404px;max-width:94vw;background:#fff;z-index:81;
+  box-shadow:var(--shadow-lg);transform:translateX(104%);transition:transform .26s cubic-bezier(.3,.8,.3,1);
+  display:flex;flex-direction:column;
+}
+.drawer.show{transform:none}
+.dr-h{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+.dr-h .ti{font-size:15px;font-weight:750}
+.dr-h .sb{font-size:12px;color:var(--ink-3);margin-top:2px}
+.dr-close{margin-left:auto;border:0;background:#f4f3fa;border-radius:8px;width:28px;height:28px;color:#6f6c8c;font-size:14px}
+.scopebadge{display:inline-flex;align-items:center;gap:6px;background:var(--indigo);color:#fff;border-radius:999px;padding:4px 11px;font-size:11.5px;font-weight:700;margin:12px 20px 0}
+.scopebadge .d{width:6px;height:6px;border-radius:50%;background:#57e39b}
+.dr-b{flex:1;overflow-y:auto;padding:14px 20px 20px}
+.memitem{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;background:#fff;transition:.15s}
+.memitem:hover{border-color:var(--lav-3);box-shadow:var(--shadow-sm)}
+.memitem .ml{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--ink-3);display:flex;align-items:center;gap:7px}
+.memitem .ml .src{background:var(--lav-2);color:#6b5bb8;border-radius:5px;padding:1px 6px;font-size:9px;letter-spacing:.04em;text-transform:none;font-weight:700}
+.memitem .mv{font-size:13.5px;color:var(--ink);margin-top:3px;line-height:1.42}
+.memitem .mv[contenteditable="true"]{outline:2px solid var(--lav-3);border-radius:5px;padding:2px 4px;background:#fbfaff}
+.memitem .mact{display:flex;gap:6px;margin-top:7px;opacity:0;transition:.15s;height:24px}
+.memitem:hover .mact{opacity:1}
+.iconmini{border:1px solid var(--line);background:#fff;border-radius:7px;width:26px;height:24px;display:grid;place-items:center;font-size:11px;color:#6f6c8c}
+.iconmini:hover{border-color:var(--lav-3);background:var(--lav-2);color:var(--purple)}
+.dr-f{border-top:1px solid var(--line);padding:13px 20px;font-size:11.5px;color:var(--ink-3);background:#fbfaff;display:flex;gap:9px;align-items:flex-start}
+.dr-f .lock{color:var(--indigo);font-size:13px}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--indigo);color:#fff;
+  padding:11px 18px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);
+  opacity:0;pointer-events:none;transition:.25s;z-index:120;display:flex;align-items:center;gap:9px;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast .tic{color:#57e39b;font-weight:900}
+
+.annot{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.annot .ac{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;box-shadow:var(--shadow-sm)}
+.annot .ac .an{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:var(--purple);margin-bottom:5px}
+.annot .ac h4{font-size:13.5px;margin-bottom:4px}
+.annot .ac p{font-size:12.5px;margin:0;color:var(--ink-3)}
+.annot .ac .try{margin-top:8px;font-size:11.5px;color:var(--purple);font-weight:700}
+@media(max-width:860px){.annot{grid-template-columns:1fr}}
+
+/* ---------- editing ---------- */
+.tbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#e8e6ff;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.tbtn:hover{background:rgba(255,255,255,.2);color:#fff}
+.tbtn.on{background:#fff;color:var(--indigo);border-color:#fff}
+.editbar{position:sticky;top:56px;z-index:55;background:#fff8e1;border-bottom:1px solid #fdefc7;color:#6b4f00;font-size:12.5px;display:none;align-items:center;gap:12px;padding:8px 26px;flex-wrap:wrap}
+body.editing .editbar{display:flex}
+.editbar b{color:#5a4100}
+.editbar .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.editbar #editStatus{font-size:11.5px;color:#8a6a00}
+.ebtn{border:1px solid #e8d9a8;background:#fff;color:#6b4f00;border-radius:7px;font-size:11.5px;font-weight:700;padding:5px 10px}
+.ebtn:hover{background:#fdf6e3}
+body.editing #reportRoot{outline:2px dashed rgba(108,92,231,.22);outline-offset:16px;border-radius:10px}
+body.editing #reportRoot p:hover,body.editing #reportRoot li:hover,body.editing #reportRoot td:hover,
+body.editing #reportRoot th:hover,body.editing #reportRoot h1:hover,body.editing #reportRoot h2:hover,
+body.editing #reportRoot h3:hover,body.editing #reportRoot h4:hover,body.editing #reportRoot blockquote:hover,
+body.editing #reportRoot .sd:hover,body.editing #reportRoot .sl:hover{
+  background:rgba(108,92,231,.07);box-shadow:0 0 0 3px rgba(108,92,231,.07);border-radius:4px;
+}
+body.editing #reportRoot a{pointer-events:none}
+.memline{display:inline-flex;align-items:center;gap:7px;background:var(--lav-2);border:1px solid var(--lav-3);color:#4b32c9;border-radius:999px;padding:3px 10px;font-size:11.5px;font-weight:700;margin:2px 0 10px}
+.memline button{border:0;background:none;color:inherit;font:inherit;text-decoration:underline;padding:0;cursor:pointer}
+.pd{border:1px solid var(--line);border-left:3px solid var(--purple);border-radius:0 12px 12px 0;padding:14px 18px;background:#fff;box-shadow:var(--shadow-sm);margin-bottom:6px}
+.pd p{font-size:14px}
+.pd ul{margin-bottom:0;font-size:13.5px}
+
+@media print{
+  .topbar,.toc,.proto-shell,.toast,.scrim,.drawer{display:none!important}
+  .report{display:block;padding:0}
+  body{font-size:11pt;background:#fff}
+  .sec{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="mark">S</span>SmartLead <span>/ Smart Assistant</span></div>
+  <nav class="tabs">
+    <button class="tab active" data-view="report">The report</button>
+    <button class="tab" data-view="proto">Prototype</button>
+  </nav>
+  <div class="meta" style="display:flex;align-items:center;gap:8px;margin-left:auto">
+    <button class="tbtn" id="printBtn" data-editui title="Print / save as PDF">⎙ PDF</button>
+    <button class="tbtn" id="saveFile" data-editui title="Download a clean copy with your edits">⤓ Save .html</button>
+    <button class="tbtn" id="editToggle" data-editui title="Toggle editing">✎ Edit</button>
+  </div>
+</header>
+
+<div class="editbar" id="editbar" data-editui>
+  <span>✎ <b>Editing</b> — click any text below to rewrite it. Changes autosave in this browser.</span>
+  <span class="right">
+    <span id="editStatus">Autosave ready</span>
+    <button class="ebtn" id="resetEdits" data-editui>Reset all edits</button>
+    <button class="ebtn" id="doneEdit" data-editui>Done</button>
+  </span>
+</div>
+
+<div class="wrap">
+
+<!-- ================= REPORT ================= -->
+<section id="view-report" class="report">
+  <nav class="toc">
+    <p class="toc-h">Contents</p>
+    <ol>
+      <li><a href="#wall">The Wall</a></li>
+      <li><a href="#users">Our Users</a></li>
+      <li><a href="#today">The Product Today</a></li>
+      <li><a href="#problem">The Core Problem</a></li>
+      <li><a href="#rice">Prioritization (RICE)</a></li>
+      <li><a href="#clarity">Strategic Clarity</a></li>
+      <li><a href="#wedge">The Wedge Moment</a></li>
+      <li><a href="#roadmap">6-Month Roadmap</a></li>
+      <li><a href="#metrics">Success Metrics</a></li>
+      <li><a href="#business">Business &amp; Pricing</a></li>
+      <li><a href="#validation">Validation Plan</a></li>
+      <li><a href="#direction">UI Prototype Direction</a></li>
+      <li><a href="#closing">Closing</a></li>
+    </ol>
+    <p class="toc-h" style="margin-top:22px">Editing</p>
+    <p class="small" style="margin:0 0 8px;line-height:1.5">Turn on <strong>Edit</strong> in the top bar, then click any text to rewrite it. Changes autosave in this browser.</p>
+    <p class="small" style="margin:0;line-height:1.5">Use <strong>Save .html</strong> to download a clean copy with your edits baked in.</p>
+  </nav>
+
+  <div id="reportRoot">
+    <!-- COVER -->
+    <div class="cover">
+      <div class="cover-top">
+        <p class="cover-kicker">Product vision · Smart Assistant</p>
+        <h1>From guide to <em>execution layer</em>.</h1>
+        <p class="sub">A 6-month product vision for SmartLead AI. Smart Assistant sits inside an operating system — so the question isn't what features it should have, it's what it should <em>be</em>.</p>
+      </div>
+      <div class="cover-bot">
+        <div><span>Prepared for</span><strong>Akshay &amp; Iknoor, SmartLead AI</strong></div>
+        <div><span>Date</span><strong>October 2026</strong></div>
+        <div><span>Author</span><strong>Ashish Pathak</strong></div>
+        <div><span>Role</span><strong>Product Manager — Smart Assistant</strong></div>
+      </div>
+    </div>
+
+    <!-- 1 WALL -->
+    <section class="sec" id="wall">
+      <p class="sec-n">01 · The Wall</p>
+      <h2>If I joined SmartLead on Day 1 and had one wall to align engineering, design, sales, and the founder — this is what goes on it.</h2>
+      <p class="lede">SmartLead AI is an AI-native outbound operating system. The keyword is <strong>operating</strong>. Prospect discovery, multi-channel sequencing, mailbox rotation, warmup, deliverability, unified inbox, CRM sync — these aren't features. They're the machinery of a revenue engine designed to help sales teams find prospects, scale multi-channel outreach, and convert cold emails into reliable revenue streams.</p>
+      <p>Smart Assistant sits inside that engine. The question isn't "What features should SA have?" — it's <em>"What should SA be inside an operating system?"</em></p>
+
+      <div class="wall" style="margin-top:22px">
+        <div class="wall-head">
+          <p class="k">The wall · Smart Assistant</p>
+          <h2>SA should be the execution layer — the fastest path between intent and outcome, for the person who already knows what they want.</h2>
+        </div>
+        <div class="wall-grid">
+          <div class="wall-cell">
+            <p class="t">What it is today</p>
+            <p>A product-knowledge chatbot. It explains the product well, and acts only at the edges.</p>
+          </div>
+          <div class="wall-cell">
+            <p class="t">The gap</p>
+            <p>Not a feature gap. A <strong>category error</strong>: SA was built as a product-knowledge chatbot and is being judged as a workflow tool.</p>
+          </div>
+          <div class="wall-cell">
+            <p class="t">The fix</p>
+            <p>Not more features. Change what SA <em>is</em> — then let capability accumulate against that identity.</p>
+          </div>
+          <div class="wall-cell">
+            <p class="t">The test</p>
+            <p>Does the user's account change, visibly, in session one — and can they reverse it if we got it wrong?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout info" style="margin-top:20px">
+        <p class="ct">The one line for the team</p>
+        <p>SA's job isn't to explain SmartLead — it's to operate SmartLead on behalf of the user.</p>
+      </div>
+    </section>
+
+    <!-- 2 USERS -->
+    <section class="sec" id="users">
+      <p class="sec-n">02 · Our Users</p>
+      <h2>The Operator, and the novice we're deliberately not building for.</h2>
+
+      <h3>The Operator — primary persona</h3>
+      <div class="grid g2" style="margin:16px 0">
+        <div class="card">
+          <h4>Who they are</h4>
+          <p style="font-size:14px;margin:0">Agency owners running 5–30 client workspaces. Senior SDRs managing weekly outbound cadences. Founders who set up their own campaigns every Monday morning.</p>
+        </div>
+        <div class="card">
+          <h4>What defines them</h4>
+          <p style="font-size:14px;margin:0">They don't need SmartLead explained. They've built campaigns before. They know what ICP means, what warmup does, why mailbox rotation matters. They're not confused — <strong>they're busy.</strong></p>
+        </div>
+      </div>
+
+      <div class="day">
+        <p class="who">Their week looks like this</p>
+        <p><span class="t">Monday</span>Pull a new lead list from Apollo/Clay, clean it, upload to SmartLead. Map columns. Dedupe. Assign to campaign.</p>
+        <p><span class="t">Tuesday</span>Write sequence variants, A/B test subject lines.</p>
+        <p><span class="t">Wed–Fri</span>Monitor replies in Master Inbox, check deliverability, adjust sending limits, pause underperformers.</p>
+        <p><span class="t">Repeat</span>Across 12 client workspaces.</p>
+      </div>
+
+      <blockquote class="voice">What they want from an AI assistant: <strong>Do the thing. Don't explain the thing.</strong></blockquote>
+
+      <h3>The Novice — deprioritized, deliberately</h3>
+      <p>New users exploring SmartLead for the first time. They benefit from navigation help and feature explanations — but that value is <strong>one-time</strong>. Once they learn the UI, the assistant becomes invisible to them.</p>
+      <p>SA's current design over-indexes for this persona. That's the root of the problem.</p>
+
+      <div class="callout ink">
+        <p class="ct">Strategic choice</p>
+        <p>Operator value compounds — every session is faster. Novice value decays — they stop needing help. <strong>We build for compounding value.</strong></p>
+      </div>
+    </section>
+
+    <!-- 3 TODAY -->
+    <section class="sec" id="today">
+      <p class="sec-n">03 · The Product Today</p>
+      <h2>What SA actually is.</h2>
+      <p class="lede">I logged in, opened Smart Assistant, and used it the way an operator would. Here's what I found.</p>
+
+      <div class="grid g2" style="margin:18px 0">
+        <div class="card">
+          <h4 style="color:var(--purple)">What SA can do today</h4>
+          <ul style="font-size:13.5px;margin:8px 0 0;padding-left:18px">
+            <li>Navigate users to the right screen</li>
+            <li>Explain features step-by-step</li>
+            <li>Take some actions: create campaigns, write sequences, pause/resume, connect accounts, add leads, update lead status, set up Smart Agents</li>
+            <li>Pull live account data</li>
+            <li>Diagnose deliverability issues (when API auth works)</li>
+            <li>Guide users through multi-step workflows</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4 style="color:var(--purple)">What SA told me about itself</h4>
+          <p style="font-size:13.5px;margin:8px 0 12px">When I pushed it to self-assess, it was remarkably honest:</p>
+          <blockquote class="voice" style="margin:0 0 10px;font-size:13.5px">"Decide and execute — I suggest changes and run them with your confirmation. I don't own tradeoffs or outcomes."</blockquote>
+          <blockquote class="voice" style="margin:0 0 10px;font-size:13.5px">"Learn what's next — Weakest link. I don't keep a running model of your campaigns or re-check fixes on my own."</blockquote>
+          <blockquote class="voice" style="margin:0;font-size:13.5px">"Identify the problem — Works only when account data is reachable. Right now API authentication is failing, so this is blocked."</blockquote>
+        </div>
+      </div>
+
+      <p>This is an assistant that knows its own limitations — and those limitations are <strong>architectural, not cosmetic</strong>.</p>
+    </section>
+
+    <!-- 4 PROBLEM -->
+    <section class="sec" id="problem">
+      <p class="sec-n">04 · The Core Problem</p>
+      <h2>SA guides where it should execute, and when it does execute, it's a black box.</h2>
+      <p class="lede">This isn't five separate issues. It's one problem with multiple symptoms.</p>
+
+      <!-- symptom 1 -->
+      <div class="pain">
+        <div class="pain-h"><span class="idx">1</span><h3>"Here are the steps" is negative value</h3><span class="tag p0">Symptom</span></div>
+        <div class="pain-b">
+          <div class="pain-row"><div class="lab">The scenario</div><div class="val">I have a CSV of 2,000 leads from Clay. I open Smart Assistant and say: <em>"Import this list to my Q3 Enterprise campaign."</em></div></div>
+          <div class="pain-row"><div class="lab">What happens</div><div class="val">SA responds with a 6-step guide telling me to navigate to Campaigns, select the campaign, click Add Leads, upload, map, and import.</div></div>
+          <div class="pain-row"><div class="lab">Why it's worse</div><div class="val">I now have to read the guide, close the chat panel, navigate to the screen, and do every step manually. That's more friction than just doing it myself. <strong>I opened the assistant to save time and it cost me time.</strong></div></div>
+          <div class="pain-row"><div class="lab">Real-world cost</div><div class="val">An agency operator doing this across 12 client workspaces on Monday morning isn't saving time — they're losing it. And after 2–3 sessions like this, they learn the lesson: don't bother opening SA. <strong>The current product is training its own churn.</strong></div></div>
+        </div>
+        <div class="callout warn" style="margin:0 20px 20px">
+          <p class="ct">The deeper insight</p>
+          <p>"Here are the steps" is negative-value for an <em>embedded</em> assistant. The user must read, close chat, and still do the work — strictly more effort than not opening it. Every guide-response trains the user not to return.</p>
+        </div>
+      </div>
+
+      <!-- symptom 2 -->
+      <div class="pain">
+        <div class="pain-h"><span class="idx">2</span><h3>No file upload, no execution</h3><span class="tag p0">Symptom</span></div>
+        <div class="pain-b">
+          <div class="pain-row"><div class="lab">The scenario</div><div class="val">I have my lead list ready. The platform supports CSV import — it's a core workflow. I try to drag my file into the assistant.</div></div>
+          <div class="pain-row"><div class="lab">What happens</div><div class="val">There's no drop zone. No file upload capability. SA tells me to go to the campaign screen and upload there. If I try pasting lead details directly, it becomes a formatting mess.</div></div>
+          <div class="pain-row"><div class="lab">Why it matters</div><div class="val">Importing leads is the first action every campaign needs. It's the most common repeated task. And it's the moment where the gap between "assistant" and "execution layer" is most painful — and most obvious.</div></div>
+        </div>
+      </div>
+
+      <!-- symptom 3 -->
+      <div class="pain">
+        <div class="pain-h"><span class="idx">3</span><h3>Black-box execution</h3><span class="tag p0">Symptom</span></div>
+        <div class="pain-b">
+          <div class="pain-row"><div class="lab">The scenario</div><div class="val">I ask SA to create a campaign with specific settings. It says "Working on it…" and I wait.</div></div>
+          <div class="pain-row"><div class="lab">What happens</div><div class="val">Long pause. No indication of progress. No trace of what it's doing. Did it create the campaign? Did it apply my settings? Is it stuck? I can't tell. When it finally responds, I have to go verify everything manually.</div></div>
+          <div class="pain-row"><div class="lab">Why it matters</div><div class="val">Execution without visibility isn't execution — it's a trust problem. And in cold email, where a misconfigured campaign can burn a domain that took weeks to warm up, trust isn't optional. <strong>Users won't delegate what they can't verify.</strong></div></div>
+        </div>
+      </div>
+
+      <!-- symptom 4 -->
+      <div class="pain">
+        <div class="pain-h"><span class="idx">4</span><h3>No memory, no compounding</h3><span class="tag p1">Symptom</span></div>
+        <div class="pain-b">
+          <div class="pain-row"><div class="lab">The scenario</div><div class="val">Every Monday, I import leads for the same 12 clients. Each client has specific column mappings, ICP definitions, tone preferences, sending limits. Every single Monday, I start from scratch.</div></div>
+          <div class="pain-row"><div class="lab">What happens</div><div class="val">SA doesn't remember my last conversation, let alone my preferences. No saved column mappings. No remembered ICPs. No default settings per workspace. Every interaction is a blank slate.</div></div>
+          <div class="pain-row"><div class="lab">Why it matters</div><div class="val">For an agency operator, the value of an assistant is proportional to how much context it retains. An assistant that forgets everything is just a chatbot. <strong>Memory is what turns a tool into a teammate.</strong></div></div>
+        </div>
+      </div>
+
+      <!-- symptom 5 -->
+      <div class="pain">
+        <div class="pain-h"><span class="idx">5</span><h3>Cannot create Agents via SA</h3><span class="tag p1">Symptom</span></div>
+        <div class="pain-b">
+          <div class="pain-row"><div class="lab">The scenario</div><div class="val">I want to set up a Smart Agent to auto-classify replies. I ask SA to do it.</div></div>
+          <div class="pain-row"><div class="lab">What happens</div><div class="val">SA explains what Agents are and tells me how to create one manually. It cannot execute.</div></div>
+          <div class="pain-row"><div class="lab">Why it matters</div><div class="val">Smart Agents, AI Automations, and Smart Assistant are three separate AI surfaces in the product — listed side by side in the left nav under "AI Team." They don't talk to each other. SA should be the unified entry point — the one place where you say what you want and the system figures out which capability to invoke.</div></div>
+        </div>
+      </div>
+
+      <h3>What I deliberately deprioritized — and why</h3>
+      <p><strong>Speech-to-text accuracy.</strong> Yes, the STT is inaccurate. But our primary persona is a desk-based operator typing commands, not a field rep dictating on mobile. STT is a commodity capability — the fix is swapping the vendor, not building anything. It's non-differentiating. <strong>Buy, don't build. Don't put it on the roadmap.</strong></p>
+      <p>This is a deliberate disagreement with my own initial instinct, and I'm making it explicit because I think it reveals something important about prioritization: not every real problem deserves engineering time. <em>Some problems deserve a vendor call.</em></p>
+    </section>
+
+    <!-- 5 RICE -->
+    <section class="sec" id="rice">
+      <p class="sec-n">05 · Prioritization</p>
+      <h2>RICE analysis.</h2>
+      <p class="lede">Scored against our operator persona, tied to SmartLead's core business value: converting cold emails into reliable revenue streams.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Initiative</th><th class="num">Reach</th><th class="num">Impact</th><th class="num">Confidence</th><th class="num">Effort</th><th class="num">RICE</th><th>Priority</th></tr></thead>
+          <tbody>
+            <tr><td><strong>File upload + executed import</strong></td><td class="num">Every</td><td class="num">High</td><td class="num">High</td><td class="num">Med</td><td class="num"><strong>36</strong></td><td><span class="tag p0">P0</span></td></tr>
+            <tr><td><strong>Live run-log (execution transparency)</strong></td><td class="num">Every</td><td class="num">High</td><td class="num">High</td><td class="num">L–M</td><td class="num"><strong>32</strong></td><td><span class="tag p0">P0</span></td></tr>
+            <tr><td><strong>Confirm / Undo on state changes</strong></td><td class="num">Every</td><td class="num">High</td><td class="num">High</td><td class="num">Low</td><td class="num"><strong>30</strong></td><td><span class="tag p0">P0</span></td></tr>
+            <tr><td><strong>Persistent memory (workspace-scoped)</strong></td><td class="num">Agencies</td><td class="num">High</td><td class="num">Med</td><td class="num">Med</td><td class="num"><strong>20</strong></td><td><span class="tag p1">P1</span></td></tr>
+            <tr><td><strong>Agent creation via SA</strong></td><td class="num">Subset</td><td class="num">Med</td><td class="num">Med</td><td class="num">M–H</td><td class="num"><strong>14</strong></td><td><span class="tag p1">P1</span></td></tr>
+            <tr><td><strong>STT improvement</strong></td><td class="num">Low</td><td class="num">Low</td><td class="num">High</td><td class="num">~0</td><td class="num">—</td><td><span class="tag no">Vendor call</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 style="margin-top:22px">RICE score, visualised</h4>
+      <div style="margin:12px 0 26px">
+        <div class="bar-row"><div class="lab">File upload + executed import</div><div class="bar-track"><span class="bar-fill" style="width:100%"></span></div><div class="v">36</div></div>
+        <div class="bar-row"><div class="lab">Live run-log</div><div class="bar-track"><span class="bar-fill" style="width:89%"></span></div><div class="v">32</div></div>
+        <div class="bar-row"><div class="lab">Confirm / Undo</div><div class="bar-track"><span class="bar-fill" style="width:83%"></span></div><div class="v">30</div></div>
+        <div class="bar-row"><div class="lab">Persistent memory</div><div class="bar-track"><span class="bar-fill" style="width:56%"></span></div><div class="v">20</div></div>
+        <div class="bar-row"><div class="lab">Agent creation via SA</div><div class="bar-track"><span class="bar-fill" style="width:39%"></span></div><div class="v">14</div></div>
+        <div class="bar-row"><div class="lab" style="color:#9a97b3">STT improvement</div><div class="bar-track"><span class="bar-fill muted" style="width:2%"></span></div><div class="v">—</div></div>
+      </div>
+
+      <h3>Where the scores come from</h3>
+      <div class="grid g2" style="margin:16px 0">
+        <div class="card">
+          <h4>File upload + executed import <span class="pill" style="float:right">36</span></h4>
+          <p style="font-size:13px;margin:8px 0 0"><strong>Reach:</strong> every user, every campaign, every week. <strong>Impact:</strong> eliminates the #1 repeated manual workflow. <strong>Confidence:</strong> high — clear user intent, structured task, reversible. <strong>Effort:</strong> medium.</p>
+        </div>
+        <div class="card">
+          <h4>Live run-log <span class="pill" style="float:right">32</span></h4>
+          <p style="font-size:13px;margin:8px 0 0"><strong>Reach:</strong> every SA-initiated action. <strong>Impact:</strong> unlocks trust → unlocks delegation → unlocks all future execution. <strong>Confidence:</strong> high — prerequisite for everything else. <strong>Effort:</strong> low–medium.</p>
+        </div>
+        <div class="card">
+          <h4>Confirm / Undo on state changes <span class="pill" style="float:right">30</span></h4>
+          <p style="font-size:13px;margin:8px 0 0"><strong>Reach:</strong> every write action. <strong>Impact:</strong> the safety net that makes execution viable in cold email (domain risk). <strong>Confidence:</strong> high — directly addresses the blast-radius concern. <strong>Effort:</strong> low.</p>
+        </div>
+        <div class="card">
+          <h4>Persistent memory <span class="pill" style="float:right">20</span></h4>
+          <p style="font-size:13px;margin:8px 0 0"><strong>Reach:</strong> agency operators, the highest-value segment. <strong>Impact:</strong> transforms every session from cold-start to warm-start; compounds. <strong>Confidence:</strong> medium — need to validate memory patterns. <strong>Effort:</strong> medium.</p>
+        </div>
+        <div class="card">
+          <h4>Agent creation via SA <span class="pill" style="float:right">14</span></h4>
+          <p style="font-size:13px;margin:8px 0 0"><strong>Reach:</strong> users setting up auto-reply classification, meeting booking. <strong>Impact:</strong> unifies AI surfaces; reduces fragmentation. <strong>Confidence:</strong> medium — depends on Agent API maturity. <strong>Effort:</strong> medium–high.</p>
+        </div>
+        <div class="card" style="background:#fbfaff">
+          <h4 style="color:#8b8ba3">STT improvement <span class="tag no" style="float:right;margin-top:2px">Vendor call</span></h4>
+          <p style="font-size:13px;margin:8px 0 0"><strong>Reach:</strong> low (desk-based persona). <strong>Impact:</strong> low (commodity, non-differentiating). <strong>Confidence:</strong> high. <strong>Effort:</strong> near-zero — a vendor swap, not an engineering project.</p>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <p class="ct">Key insight</p>
+        <p>File upload + run-log + confirm/undo form a <strong>trust loop</strong> — they must ship together. Import without visibility is a black box. Visibility without undo is a liability in cold email. Undo without execution is pointless. They're <strong>one initiative, not three</strong>.</p>
+      </div>
+    </section>
+
+    <!-- 6 CLARITY -->
+    <section class="sec" id="clarity">
+      <p class="sec-n">06 · Strategic Clarity</p>
+      <h2>Three design principles, four refusals.</h2>
+
+      <div class="grid g3" style="margin:20px 0">
+        <div class="card" style="border-top:3px solid var(--purple)">
+          <h4>1 · Do, don't describe</h4>
+          <p style="font-size:13.5px;margin:0">The default response to an action-intent message is execution, not explanation. "Show me how" becomes the opt-in mode. This is a 180° flip from today.</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--indigo-3)">
+          <h4>2 · Show your work</h4>
+          <p style="font-size:13.5px;margin:0">Every execution shows a live, step-by-step trace. The user watches it happen. Errors are surfaced inline with recovery options. No black boxes.</p>
+        </div>
+        <div class="card" style="border-top:3px solid var(--purple-3)">
+          <h4>3 · Remember, scoped per workspace</h4>
+          <p style="font-size:13.5px;margin:0">SA accumulates context — ICP, tone, column mappings, naming conventions, preferred settings — scoped strictly per client workspace. User-visible, editable, deletable. Memory is the moat.</p>
+        </div>
+      </div>
+
+      <h3>What SA deliberately is NOT</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Not this</th><th>Because</th></tr></thead>
+          <tbody>
+            <tr><td><strong>A general LLM chatbot</strong></td><td>It doesn't discuss the weather, write blog posts, or answer questions outside SmartLead's domain.</td></tr>
+            <tr><td><strong>A replacement for the UI</strong></td><td>Complex configuration (warmup settings, DNS records, CRM field mapping) stays in the dedicated screens. SA is the fast path for repeated, structured tasks.</td></tr>
+            <tr><td><strong>Autonomous on high-risk actions</strong></td><td>Anything that touches live sending — sequence edits, sending limit changes, domain settings — requires explicit human confirmation. Always. The cost of a wrong execution in cold email is weeks of burned warmup and potentially a lost client.</td></tr>
+            <tr><td><strong>A fourth AI surface</strong></td><td>Over time, SA becomes the unified entry point for Agents and Automations — not a peer to them.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7 WEDGE -->
+    <section class="sec" id="wedge">
+      <p class="sec-n">07 · The Wedge Moment</p>
+      <h2>The wedge is the first moment a user feels SA changed their work.</h2>
+      <p class="lede">It must happen in session 1, in under 90 seconds.</p>
+
+      <h3>Why CSV import is the wedge</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Criterion</th><th>CSV import</th><th>Campaign creation</th><th>Diagnosis</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Frequency</strong></td><td>Every campaign, every week</td><td>Per campaign (less frequent)</td><td>Reactive, intermittent</td></tr>
+            <tr><td><strong>First-session relevance</strong></td><td>Always the first step</td><td>Second step</td><td>May not be needed yet</td></tr>
+            <tr><td><strong>Structural reliability</strong></td><td>Structured input → structured output</td><td>Requires nuanced config</td><td>Depends on API auth</td></tr>
+            <tr><td><strong>Blast radius</strong></td><td>Reversible (undo import)</td><td>Medium (campaign settings)</td><td>Read-only (low risk, low wow)</td></tr>
+            <tr><td><strong>Current pain</strong></td><td><strong>Maximum</strong></td><td>Moderate</td><td>Moderate</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>The wedge flow</h3>
+      <div class="grid g2" style="align-items:start;margin:16px 0">
+        <div>
+          <p style="font-size:14px"><strong>User action:</strong> Drags a CSV into the SA chat window (or clicks the paperclip and selects a file).</p>
+          <p style="font-size:14px"><strong>SA response —</strong> live, step-by-step:</p>
+        </div>
+        <div class="runlog" style="margin-top:0">
+          <div class="runlog-h"><span style="color:var(--ok);font-weight:900">✓</span> Import complete <span class="done-lab">~90s</span></div>
+          <div class="rstep done"><div class="glyph">✓</div><div><div class="sl">File received</div><div class="sd">2,847 rows detected</div></div><div></div></div>
+          <div class="rstep done"><div class="glyph">✓</div><div><div class="sl">Columns mapped</div><div class="sd">Email → email · First Name → first_name · Company → company_name · Title → job_title</div><div class="sd" style="margin-top:4px">2 unmapped: "Revenue Band", "Tech Stack" → saved as custom fields</div></div><div></div></div>
+          <div class="rstep done"><div class="glyph">✓</div><div><div class="sl">Validated and deduplicated</div><div class="sd">2,691 valid leads · 156 skipped: 89 duplicates, 42 invalid emails, 25 missing required fields</div></div><div></div></div>
+          <div class="rstep done"><div class="glyph">✓</div><div><div class="sl">Ready to import to</div><div class="sd">Q3 Enterprise Campaign</div></div><div></div></div>
+        </div>
+      </div>
+
+      <div class="summary" style="max-width:620px">
+        <div class="sh"><span class="ok-ic">✓</span> 2,691 leads imported to Q3 Enterprise Campaign</div>
+        <div class="stats"><span><b>2,691</b> imported</span><span><b>156</b> skipped</span><span class="muted-c">~90 seconds for a 3,000-row file</span></div>
+        <div class="acts">
+          <button class="btn ghost-danger sm">Undo Import</button>
+          <button class="btn sm">View Skipped Rows</button>
+          <button class="btn primary sm">Open Campaign</button>
+        </div>
+      </div>
+
+      <blockquote class="voice" style="margin-top:20px">
+        "It just did it. I can see exactly what it did. I can undo it if it's wrong. This is what SA should have been all along."
+        <cite>What the user feels</cite>
+      </blockquote>
+
+      <p class="small">Try it yourself in the <a href="#" class="goto-proto" style="font-weight:700">interactive prototype</a> — the same flow, clickable in the real product shell.</p>
+    </section>
+
+    <!-- 8 ROADMAP -->
+    <section class="sec" id="roadmap">
+      <p class="sec-n">08 · Roadmap</p>
+      <h2>6-month roadmap: three loops, in the only order that compounds.</h2>
+
+      <div class="grid g3" style="margin:18px 0">
+        <div class="phase">
+          <p class="wk">Phase 1 · weeks 0–6</p>
+          <h3>Execute + Show</h3>
+          <p class="loop">The trust loop</p>
+          <ul>
+            <li>File upload via SA (drag-and-drop + paperclip)</li>
+            <li>Executed import: column mapping, validation, dedup, import — all inside chat</li>
+            <li>Live run-log: vertical stepper with real-time status for every SA action</li>
+            <li>Confirm/Undo: explicit confirmation before write actions, one-click rollback after</li>
+            <li>Default flip: action-intent → execution (with "show me how" as opt-in)</li>
+          </ul>
+          <div class="cut"><b>Cut from Phase 1:</b> multi-file upload (one file at a time is fine for launch), enrichment-on-import (separate workflow; bundling delays the wedge), STT fix (vendor swap, not a roadmap item).</div>
+          <div style="margin-top:12px;font-size:12.5px;color:var(--ok);font-weight:700">Exit: executed-task rate ≥ 20%</div>
+        </div>
+        <div class="phase p2">
+          <p class="wk" style="color:var(--indigo-3)">Phase 2 · weeks 6–14</p>
+          <h3>Remember</h3>
+          <p class="loop">The compounding loop</p>
+          <ul>
+            <li>Persistent conversation history (retrievable, searchable)</li>
+            <li>Workspace memory: ICP definitions, tone/voice, column-mapping defaults, naming conventions, preferred sending settings — scoped per client workspace</li>
+            <li>Memory controls: user-visible, editable, deletable (not a black box)</li>
+            <li>Agent creation via SA: "Set up a reply classifier for Acme Co that routes positive replies to the Deals pipeline"</li>
+          </ul>
+          <div class="cut"><b>Why second:</b> memory is multiplicative on execution. If execution = 0, memory × 0 = 0.</div>
+          <div style="margin-top:12px;font-size:12.5px;color:var(--ok);font-weight:700">Exit: ≥40% of executors repeat within 7 days</div>
+        </div>
+        <div class="phase p3">
+          <p class="wk" style="color:#6a4bd8">Phase 3 · months 4–6</p>
+          <h3>Anticipate</h3>
+          <p class="loop">The proactive loop</p>
+          <ul>
+            <li>Persistent pre-approved recurring checks (today's recurring tasks require confirmation every time — that's not automation, it's a reminder with extra steps)</li>
+            <li>Proactive actionable nudges with evidence: "Acme Co's open rate dropped 18% this week. I found 3 possible causes. Want me to fix?"</li>
+            <li>Begin folding Agents and Automations under SA as the unified AI entry point</li>
+          </ul>
+          <div class="cut"><b>Why last:</b> proactivity without a track record of reliable execution is just noise. Users ignore nudges from an assistant they don't trust.</div>
+          <div style="margin-top:12px;font-size:12.5px;color:var(--ok);font-weight:700">Exit: executed-task rate ≥ 35%</div>
+        </div>
+      </div>
+
+      <h3>Why this order</h3>
+      <p>You cannot build memory on top of an assistant that doesn't do anything worth remembering. You cannot build proactivity on top of an assistant that users don't trust. <strong>Execution + transparency first. Everything else multiplies from there.</strong></p>
+
+      <h3>The memory effect, concretely</h3>
+      <div class="grid g2" style="margin:14px 0">
+        <div class="card" style="border-left:3px solid #c9c7d8">
+          <h4 style="color:var(--ink-3)">Week 1</h4>
+          <p style="font-size:13.5px;margin:0">"Import this list to Q3 Enterprise." → SA maps columns, asks for confirmation.</p>
+        </div>
+        <div class="card" style="border-left:3px solid var(--purple)">
+          <h4>Week 5</h4>
+          <p style="font-size:13.5px;margin:0">"Import this list to Q3 Enterprise." → SA auto-maps columns using saved preferences, applies Acme Co's ICP filter, imports. No questions asked.</p>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <p class="ct">The agency moat</p>
+        <p>For an agency running 20 client workspaces, accumulated memory per workspace becomes the one asset that doesn't export. Lead lists export. Sequences export. Column-mapping preferences, ICP definitions, tone guides, naming conventions accumulated over 6 months of working together? Those stay in SmartLead. <strong>Memory is the switching cost.</strong></p>
+      </div>
+
+      <h3>Why anticipation comes last</h3>
+      <p>In cold email, the costliest failures are <strong>silent</strong>. Spam placement doesn't announce itself. A burned domain doesn't throw an error — it just stops getting replies, quietly, over weeks. By the time a user notices, the damage is done: weeks of warmup lost, an agency client asking hard questions.</p>
+      <p>A request-response assistant is structurally best at the cheapest problems ("how do I do X?") and structurally worst at the costliest ones (the ones nobody thinks to ask about). Proactive monitoring inverts this — SA surfaces the expensive silent failures before the user knows to ask. But proactivity without a track record of reliable execution is just noise. That's why Phase 1 (trust) → Phase 2 (context) → Phase 3 (proactivity) is the only viable order.</p>
+    </section>
+
+    <!-- 9 METRICS -->
+    <section class="sec" id="metrics">
+      <p class="sec-n">09 · Success Metrics</p>
+      <h2>Primary metric: Executed-Task Rate.</h2>
+
+      <div class="metric-hero" style="margin:18px 0 26px">
+        <p class="k">North star</p>
+        <div style="font-size:24px;font-weight:750;letter-spacing:-.02em;margin-top:6px">Executed-Task Rate</div>
+        <p class="def">% of action-intent SA conversations that end in a <strong style="color:#fff">confirmed account state change</strong> without the user leaving chat.</p>
+        <div class="ladder">
+          <div><div class="v">~0%</div><div class="l">Baseline (today)</div></div>
+          <div><div class="v">20%</div><div class="l">Phase 1 exit — week 6</div></div>
+          <div><div class="v">35%</div><div class="l">Month 6</div></div>
+        </div>
+      </div>
+
+      <h3>Why this metric</h3>
+      <ul>
+        <li>Directly measures the strategic shift from "guide" to "execute"</li>
+        <li>Leading indicator (moves within weeks of shipping, not months)</li>
+        <li>Specific to SA (not confounded by pricing changes, market shifts, or other product work)</li>
+        <li>Aligns with the business goal: if SA executes, operators stay in SmartLead instead of doing work elsewhere or manually</li>
+      </ul>
+
+      <h3>Guardrails</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Guardrail</th><th>Threshold</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Undo / rollback rate</strong></td><td class="num">&lt; 5%</td><td>If users are constantly undoing, execution quality is bad — we're fast but wrong.</td></tr>
+            <tr><td><strong>Median time-to-terminal-state</strong><br><span class="small">imports &lt; 5k rows</span></td><td class="num">&lt; 20 seconds</td><td>Speed is the value prop; if execution is slow, users revert to manual.</td></tr>
+            <tr><td><strong>Error rate on column mapping</strong></td><td class="num">&lt; 3%</td><td>Trust depends on accuracy; wrong mappings in cold email = wrong personalization = domain risk.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Rejected metrics and why</h3>
+      <ul>
+        <li><strong>SA sessions / usage</strong> — rewards repeat-asking. A user who has to ask SA the same thing three times because it forgot generates high usage and low value.</li>
+        <li><strong>CSAT</strong> — lagging, noisy, survey fatigue. Doesn't move fast enough to guide weekly iteration.</li>
+        <li><strong>Retention</strong> — too confounded. Influenced by pricing, deliverability, competition, market conditions. By the time retention moves (90+ days), it's too late to attribute to SA changes.</li>
+      </ul>
+
+      <h3>Tying to business goals</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Business goal</th><th>How SA's Executed-Task Rate connects</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Retention</strong></td><td>Operators who execute inside SA build workspace memory (Phase 2) → switching cost increases → retention improves.</td></tr>
+            <tr><td><strong>Expansion</strong></td><td>Agencies that use SA across workspaces hit action-credit limits → natural upsell trigger.</td></tr>
+            <tr><td><strong>Competitive positioning</strong></td><td>Every competitor is shipping AI copywriting. SA-as-executor is a different category — "the one that does it" vs. "the one that writes it."</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 10 BUSINESS -->
+    <section class="sec" id="business">
+      <p class="sec-n">10 · Business &amp; Pricing</p>
+      <h2>Don't gate SA by plan. Meter what it consumes.</h2>
+      <p class="lede">SA should be available on every plan. The value it drives — retention, efficiency, workspace lock-in — is too important to restrict. Instead, meter the resources SA consumes: leads imported, enrichment credits, agent configurations, workspace memory storage.</p>
+      <p>This creates a natural expansion path: an agency running 20 workspaces with accumulated memory and high execution volume will naturally hit higher tiers — not because SA is locked, but because they're getting more value from it.</p>
+
+      <h3>The competitive moat</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Competitor</th><th>Their AI play</th><th>SmartLead's differentiation</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Instantly</strong></td><td>AI sequence writing, lead finder</td><td>SA executes workflows end-to-end, not just writes copy</td></tr>
+            <tr><td><strong>lemlist</strong></td><td>AI-generated personalization</td><td>SA remembers context per workspace — personalization at the workflow level, not just the email level</td></tr>
+            <tr><td><strong>Apollo</strong></td><td>AI email drafting, prospecting</td><td>SA is an execution layer, not a prospecting bolt-on</td></tr>
+            <tr><td><strong>Reply.io</strong></td><td>AI assistant for sequences</td><td>SA accumulates workspace memory — every session is faster than the last</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout info">
+        <p class="ct">The key insight</p>
+        <p>Everyone is competing on AI copywriting. <strong>Nobody is competing on AI execution.</strong> That's the gap. And workspace memory — accumulated ICP definitions, tone guides, column mappings, naming conventions — is the one asset that doesn't export. Lists export. Sequences export. Six months of operational context doesn't.</p>
+      </div>
+    </section>
+
+    <!-- 11 VALIDATION -->
+    <section class="sec" id="validation">
+      <p class="sec-n">11 · Validation Plan</p>
+      <h2>What could prove me wrong.</h2>
+      <p class="lede">I'm making bets. Here's what I'd test in the first two weeks to pressure-test them.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Assumption</th><th>How to validate</th><th>What changes if I'm wrong</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Import is the #1 first-session action intent</strong></td><td>Analyze SA conversation logs for action-intent classification</td><td>If diagnosis is #1, lead with a diagnostic execution flow instead</td></tr>
+            <tr><td><strong>Operators are the highest-value SA persona</strong></td><td>Segment SA usage by account type (agency vs. single-user) and correlate with revenue</td><td>If single-user SDRs dominate, adjust memory scoping and wedge flow</td></tr>
+            <tr><td><strong>Users repeat themselves across sessions</strong></td><td>Analyze conversation similarity within users across sessions</td><td>If conversations are mostly unique, deprioritize memory (Phase 2)</td></tr>
+            <tr><td><strong>API auth failure is intermittent, not systemic</strong></td><td>Check error logs for auth failure frequency and pattern</td><td>If it's systemic, this is a P0 infrastructure fix that gates everything</td></tr>
+            <tr><td><strong>"Guide" responses cause session abandonment</strong></td><td>Measure SA conversation drop-off after guide-type responses vs. execution responses</td><td>If guide responses have equal engagement, the "negative value" hypothesis is wrong</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 12 DIRECTION -->
+    <section class="sec" id="direction">
+      <p class="sec-n">12 · UI Prototype Direction</p>
+      <h2>Three screens. Every element maps to a design principle.</h2>
+      <p class="lede">Do, don't describe. Show your work. Confirm before acting. Built in SmartLead's existing design language — deep indigo top bar, lavender nav states, purple accents, white content area — so they feel like what ships next, not a redesign.</p>
+
+      <p><button class="btn primary" id="openProtoBtn" style="margin-top:6px">Open the interactive prototype →</button></p>
+
+      <h3>Screen 1 — The drop zone &amp; composer</h3>
+      <div class="pd">
+        <p><strong>What it shows:</strong> The SA chat panel with the new file-upload capability. A paperclip icon in the composer opens a file picker. A drag-and-drop overlay activates when the user drags a CSV over the window. First-run suggestion chip reads "Import a lead list." Composer placeholder updated to "Ask SmartAssistant anything… or drop a CSV."</p>
+        <p><strong>Design principle:</strong> Do, don't describe. The UI invites action, not questions.</p>
+        <p><strong>Key UI elements:</strong></p>
+        <ul>
+          <li>Left nav rail with icon groups: Engage, AI Team (active), Inbox Health, Pipeline</li>
+          <li>Expanded nav panel showing AI Assistant (active), AI Agents, Automations (Beta badge)</li>
+          <li>Recent conversations list in the nav panel</li>
+          <li>Chat area with SA greeting message referencing active campaigns</li>
+          <li>Suggestion chips: Import a lead list (primary), Create a new campaign, Check deliverability, Set up a Smart Agent</li>
+          <li>Composer bar with paperclip (file upload), text input, mic icon, send button</li>
+          <li>Full-screen drop overlay with dashed purple border and instruction text</li>
+        </ul>
+      </div>
+
+      <h3>Screen 2 — The live run-log</h3>
+      <div class="pd">
+        <p><strong>What it shows:</strong> The SA chat after a user has uploaded a CSV and requested import. The assistant's response contains a vertical stepper showing each execution step in real time: file received (done), columns mapped (done, expandable to show mapping details), validated and deduplicated (done, expandable to show skip reasons), imported (done). A terminal summary card at the bottom shows the final count and action buttons.</p>
+        <p><strong>Design principle:</strong> Show your work. The user watches every step. Trust is earned, not assumed.</p>
+        <p><strong>Key UI elements:</strong></p>
+        <ul>
+          <li>User message bubble with embedded file attachment card (filename, row count, file size)</li>
+          <li>Vertical stepper with three states: ✓ done (green), ● in-progress (purple, pulsing), ○ pending (gray)</li>
+          <li>Connecting lines between steps that change color based on progress</li>
+          <li>Expandable detail panels on each step (click to reveal column mappings, skip reasons)</li>
+          <li>Terminal success card with green gradient background showing: import count, skip count, total time</li>
+          <li>Action buttons: Undo Import (red), View Skipped (purple outline), Open Campaign (purple filled)</li>
+        </ul>
+      </div>
+
+      <h3>Screen 3 — The memory panel</h3>
+      <div class="pd">
+        <p><strong>What it shows:</strong> The SA chat alongside an open memory drawer. The chat shows a conversation where SA auto-applied saved preferences for a client workspace. The memory panel shows all remembered context for that workspace: ICP definition, email tone, column mapping defaults, naming conventions, sending preferences. Each memory item is editable and deletable.</p>
+        <p><strong>Design principle:</strong> Remember, scoped per workspace. Memory is visible, controllable, and valuable — not creepy.</p>
+        <p><strong>Key UI elements:</strong></p>
+        <ul>
+          <li>Chat column showing SA responses with "Used 3 saved preferences" memory badges</li>
+          <li>Slide-in memory panel (right side) with purple-tinted background</li>
+          <li>Workspace scope badge: "Client: Acme Co" with building icon</li>
+          <li>Scope note: "Memory is scoped to this workspace only. Nothing leaks across clients."</li>
+          <li>Memory cards for each category: ICP Definition, Email Tone &amp; Voice, Column Mapping Defaults, Naming Convention, Sending Preferences</li>
+          <li>Each card shows: category label, stored value, source ("Learned from X conversations"), edit button, delete button</li>
+          <li>Edit/delete buttons appear on hover (progressive disclosure)</li>
+          <li>Footer note: "All memories are visible, editable, and deletable."</li>
+        </ul>
+      </div>
+
+      <h3>Design tokens</h3>
+      <div class="grid g4" style="margin-top:12px">
+        <div class="card" style="padding:14px"><div style="height:34px;border-radius:8px;background:#1b1b6b"></div><p class="small" style="margin:8px 0 0"><code>#1b1b6b</code> · shell</p></div>
+        <div class="card" style="padding:14px"><div style="height:34px;border-radius:8px;background:#6c5ce7"></div><p class="small" style="margin:8px 0 0"><code>#6c5ce7</code> · accent</p></div>
+        <div class="card" style="padding:14px"><div style="height:34px;border-radius:8px;background:#efecff;border:1px solid #e4dfff"></div><p class="small" style="margin:8px 0 0"><code>#efecff</code> · active nav</p></div>
+        <div class="card" style="padding:14px"><div style="height:34px;border-radius:8px;background:#fff8e1;border:1px solid #fdefc7"></div><p class="small" style="margin:8px 0 0"><code>#fff8e1</code> · warning</p></div>
+      </div>
+    </section>
+
+    <!-- 13 CLOSING -->
+    <section class="sec" id="closing">
+      <p class="sec-n">13 · Closing</p>
+      <h2>This document is the wall.</h2>
+      <p class="lede">It tells the team five things.</p>
+
+      <div class="grid g2" style="margin:18px 0">
+        <div class="card"><h4>What we believe</h4><p style="font-size:13.5px;margin:0">SA's job isn't to explain SmartLead — it's to operate SmartLead on behalf of the user.</p></div>
+        <div class="card"><h4>What we're building first</h4><p style="font-size:13.5px;margin:0">The trust loop — file upload, executed import, live run-log, confirm/undo. One wedge moment that proves SA can <em>do</em>, not just describe.</p></div>
+        <div class="card"><h4>What we're building next</h4><p style="font-size:13.5px;margin:0">Memory that compounds — so session 50 is faster than session 1, and switching to a competitor means starting from scratch.</p></div>
+        <div class="card"><h4>What we're building last</h4><p style="font-size:13.5px;margin:0">Proactive intelligence — catching the silent, expensive failures before the user knows to ask.</p></div>
+        <div class="card"><h4>How we'll know it's working</h4><p style="font-size:13.5px;margin:0">One number. Executed-task rate. Zero today. 35% in six months.</p></div>
+        <div class="card"><h4>What we're deliberately not building</h4><p style="font-size:13.5px;margin:0">A general chatbot. A UI replacement. An autonomous sender. A fourth AI surface.</p></div>
+      </div>
+
+      <blockquote class="voice" style="font-size:15.5px">
+        The thinking is mine. The tools helped me move faster. The arguments are on the wall — push back on any of them.
+      </blockquote>
+
+      <div class="footer">
+        <span>Prepared by Ashish Pathak · October 2026</span>
+        <span>Product Manager — Smart Assistant · SmartLead AI</span>
+      </div>
+    </section>
+  </div>
+
+</section>
+
+<!-- ================= PROTOTYPE ================= -->
+<section id="view-proto" class="proto-shell" hidden>
+  <div class="proto-intro">
+    <div>
+      <p class="sec-n">Prototype · mid-fidelity · clickable</p>
+      <h2 style="margin:6px 0">The first ninety seconds.</h2>
+      <p style="margin:0;color:var(--ink-2);max-width:62ch;font-size:14px">Same request, two products. Run it in <strong>Today</strong> mode to see what the assistant does now, then in <strong>Proposed</strong> mode to see what Phase 1 ships.</p>
+    </div>
+    <p class="proto-note">Fully self-contained. Nothing is sent anywhere — every state change is simulated in this page.</p>
+  </div>
+
+  <div class="proto-frame">
+    <div class="pl-top">
+      <div class="lg">S</div>
+      <div class="pl-ws"><span class="dot"></span>Acme Co <span style="opacity:.6;font-size:10px">▾</span></div>
+      <div class="right">
+        <span>⚑ Trial · 6 days left</span>
+        <div class="pl-avatar">PS</div>
+      </div>
+    </div>
+    <div class="pl-body">
+      <div class="pl-rail">
+        <div class="ic on">▦</div>
+        <div class="ic">✉</div>
+        <div class="ic">◎</div>
+        <div class="ic">◔</div>
+        <div class="ic sep"></div>
+        <div class="ic">⚙</div>
+      </div>
+      <div class="pl-nav">
+        <div class="grp">Engage</div>
+        <div class="it">◈ Prospect Finder</div>
+        <div class="it">✉ Campaigns</div>
+        <div class="it">◎ Master Inbox</div>
+        <div class="it">◔ Sender Accounts</div>
+        <div class="grp">AI Team</div>
+        <div class="it on">✦ AI Assistant</div>
+        <div class="it">◇ AI Agents</div>
+        <div class="it">⚡ Automations <span class="b">BETA</span></div>
+        <div class="grp">Recents</div>
+        <div class="it" style="color:#6f6c8c">◷ Import · Q3 Enterprise</div>
+        <div class="it" style="color:#6f6c8c">◷ Reply rate drop · Acme</div>
+        <div class="grp">Inbox health</div>
+        <div class="it">◍ Sending Servers</div>
+        <div class="grp">Pipeline</div>
+        <div class="it">▤ Deals</div>
+      </div>
+
+      <div class="pl-chat">
+        <div class="pl-chat-h">
+          <div class="ttl">Smart Assistant <span>/ Acme Co</span></div>
+          <div class="pl-mode">
+            <button id="modeToday" class="today">Today</button>
+            <button id="modeProp" class="on">Proposed</button>
+          </div>
+          <button class="pl-membtn" id="openMem">✦ Memory</button>
+        </div>
+
+        <div class="pl-thread" id="thread">
+          <div class="pl-empty" id="empty">
+            <div class="big">What are we getting done today?</div>
+            <p>I can work inside Acme Co — import leads, build campaigns, pause sends, set up agents. I'll show every step and you can undo any of it.</p>
+          </div>
+        </div>
+
+        <div class="pl-composer">
+          <div class="pl-chips" id="chips">
+            <button class="chip primary" data-act="import">✦ Import a lead list</button>
+            <button class="chip" data-act="campaign">Create a new campaign</button>
+            <button class="chip" data-act="deliverability">Check deliverability</button>
+            <button class="chip" data-act="agent">Set up a Smart Agent</button>
+          </div>
+          <div class="pl-inputrow">
+            <button class="icobtn" id="clip" title="Attach a file">📎</button>
+            <textarea id="input" rows="1" placeholder="Ask SmartAssistant anything… or drop a CSV"></textarea>
+            <button class="icobtn" title="Voice">🎙</button>
+            <button class="sendbtn" id="send">↑</button>
+          </div>
+          <div class="dropzone" id="dropzone">
+            <b>Drop a CSV or paste leads</b>
+            <span>We'll map the columns, check for duplicates, and show you every step before anything is saved.</span>
+            <div class="picks">
+              <button class="btn primary sm" id="pickFile">Choose a file</button>
+              <button class="btn sm" id="pasteMode">Paste from clipboard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="annot">
+    <div class="ac">
+      <p class="an">Screen 1</p>
+      <h4>Composer with drop zone</h4>
+      <p>A file is a first-class object. The assistant can be handed work, not just asked about it.</p>
+      <p class="try">→ Click 📎 or the "Import a lead list" chip</p>
+    </div>
+    <div class="ac">
+      <p class="an">Screen 2</p>
+      <h4>Live run-log</h4>
+      <p>Execution as evidence: every step named, expandable, checkable. Terminal state with proof, undo, and a way forward.</p>
+      <p class="try">→ Expand a step, then press "Undo import"</p>
+    </div>
+    <div class="ac">
+      <p class="an">Screen 3</p>
+      <h4>Memory panel</h4>
+      <p>Visible, editable, deletable, and visibly scoped to one workspace. The badge is the confidentiality contract.</p>
+      <p class="try">→ Click "✦ Memory", edit or delete an item</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dr-h">
+    <div>
+      <div class="ti">Remembered for this workspace</div>
+      <div class="sb">Everything the assistant carries between sessions</div>
+    </div>
+    <button class="dr-close" id="closeMem">✕</button>
+  </div>
+  <div class="scopebadge"><span class="d"></span> 🏢 Client: Acme Co · workspace 3 of 14</div>
+  <div class="dr-b" id="memList"></div>
+  <div class="dr-f"><span class="lock">🔒</span><span>Memory is scoped to this workspace only. Nothing leaks across clients. All memories are visible, editable, and deletable.</span></div>
+</aside>
+
+<div class="toast" id="toast"><span class="tic">✓</span><span id="toastMsg"></span></div>
+
+<script>
+/* ============ view switch ============ */
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+    t.classList.add('active');
+    var v = t.dataset.view;
+    document.getElementById('view-report').hidden = v !== 'report';
+    document.getElementById('view-proto').hidden = v !== 'proto';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+/* ============ toast ============ */
+var toastEl = document.getElementById('toast'), toastTimer;
+function toast(msg){
+  document.getElementById('toastMsg').textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2400);
+}
+
+/* ============ memory drawer ============ */
+var MEM = [
+  {label:'ICP Definition', src:'Learned from 14 conversations', val:'RevOps &amp; Sales Ops leaders at 200–2,000-person SaaS companies in North America and the UK.'},
+  {label:'Email Tone &amp; Voice', src:'Learned from 22 conversations', val:'Dry and specific. No exclamation marks, no "hope you\'re well". Under 90 words.'},
+  {label:'Column Mapping Defaults', src:'Learned from 9 imports', val:'Company Domain → domain · First Name → first_name · Work Email → email · Revenue Band, Tech Stack → custom fields'},
+  {label:'Naming Convention', src:'Set by you', val:'{Quarter} · {Segment} · {Region} · v{n} — always created paused for review.'},
+  {label:'Sending Preferences', src:'Learned from 6 campaigns', val:'Max 28/day per mailbox, 3 mailboxes rotating, warmup on. Never edit a live sequence without asking.'}
+];
+var memList = document.getElementById('memList');
+function renderMem(){
+  memList.innerHTML = '';
+  if(!MEM.length){
+    memList.innerHTML = '<p class="small" style="margin-top:20px">Nothing remembered yet for this workspace. The assistant will start learning as you work — and you can see and delete anything it keeps.</p>';
+    return;
+  }
+  MEM.forEach(function(m, i){
+    var d = document.createElement('div');
+    d.className = 'memitem';
+    d.innerHTML =
+      '<div class="ml">' + m.label + ' <span class="src">' + m.src + '</span></div>' +
+      '<div class="mv" data-i="' + i + '">' + m.val + '</div>' +
+      '<div class="mact">' +
+        '<button class="iconmini" data-edit="' + i + '" title="Edit">✎</button>' +
+        '<button class="iconmini" data-del="' + i + '" title="Delete">🗑</button>' +
+      '</div>';
+    memList.appendChild(d);
+  });
+  memList.querySelectorAll('[data-del]').forEach(function(b){
+    b.addEventListener('click', function(e){
+      var i = +b.dataset.del, lab = MEM[i].label;
+      MEM.splice(i,1); renderMem(); toast('Forgotten: ' + lab + ' — removed for this workspace only.');
+    });
+  });
+  memList.querySelectorAll('[data-edit]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var i = +b.dataset.edit;
+      var mv = memList.querySelector('.mv[data-i="' + i + '"]');
+      mv.setAttribute('contenteditable','true');
+      mv.focus();
+      mv.addEventListener('blur', function(){
+        MEM[i].val = mv.textContent.trim();
+        mv.removeAttribute('contenteditable');
+        renderMem(); toast('Memory updated for this workspace.');
+      }, {once:true});
+    });
+  });
+}
+renderMem();
+
+function openMem(){ document.getElementById('drawer').classList.add('show'); document.getElementById('scrim').classList.add('show'); }
+function closeMem(){ document.getElementById('drawer').classList.remove('show'); document.getElementById('scrim').classList.remove('show'); }
+document.getElementById('openMem').addEventListener('click', openMem);
+document.getElementById('closeMem').addEventListener('click', closeMem);
+document.getElementById('scrim').addEventListener('click', closeMem);
+
+/* ============ chat ============ */
+var thread = document.getElementById('thread');
+var empty = document.getElementById('empty');
+var mode = 'proposed';
+var running = false;
+
+document.getElementById('modeToday').addEventListener('click', function(){
+  mode = 'today';
+  document.getElementById('modeToday').classList.add('on');
+  document.getElementById('modeProp').classList.remove('on');
+  toast('Replaying as the assistant behaves today.');
+});
+document.getElementById('modeProp').addEventListener('click', function(){
+  mode = 'proposed';
+  document.getElementById('modeProp').classList.add('on');
+  document.getElementById('modeToday').classList.remove('on');
+  toast('Replaying as Phase 1 would behave.');
+});
+
+document.getElementById('clip').addEventListener('click', function(){
+  document.getElementById('dropzone').classList.toggle('show');
+});
+document.getElementById('pickFile').addEventListener('click', startImport);
+document.getElementById('pasteMode').addEventListener('click', startImport);
+
+var dz = document.getElementById('dropzone');
+['dragenter','dragover'].forEach(function(ev){
+  dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(ev){
+  dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.remove('over'); });
+});
+dz.addEventListener('drop', function(e){ startImport(); });
+
+document.querySelectorAll('#chips .chip').forEach(function(c){
+  c.addEventListener('click', function(){
+    var a = c.dataset.act;
+    if(a === 'import'){ startImport(); }
+    else if(a === 'campaign'){ askText('Create a new campaign for Acme, Q3 Enterprise.', 'campaign'); }
+    else if(a === 'deliverability'){ askText('Check deliverability on my sender accounts.', 'deliverability'); }
+    else if(a === 'agent'){ askText('Set up a Smart Agent that classifies replies.', 'agent'); }
+  });
+});
+
+document.getElementById('input').addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); submit(); }
+});
+document.getElementById('send').addEventListener('click', submit);
+function submit(){
+  var v = document.getElementById('input').value.trim();
+  if(!v){ document.getElementById('dropzone').classList.add('show'); return; }
+  document.getElementById('input').value = '';
+  askText(v);
+}
+
+function scroll(){ thread.scrollTop = thread.scrollHeight; }
+
+function userMsg(html){
+  if(empty){ empty.remove(); empty = null; }
+  var d = document.createElement('div');
+  d.className = 'msg user';
+  d.innerHTML = '<div class="av">PS</div><div class="bub">' + html + '</div>';
+  thread.appendChild(d); scroll();
+}
+function botMsg(html){
+  if(empty){ empty.remove(); empty = null; }
+  var d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = '<div class="av">✦</div><div class="bub" style="min-width:0;flex:1">' + html + '</div>';
+  thread.appendChild(d); scroll();
+  return d.querySelector('.bub');
+}
+
+function askText(t, kind){
+  if(running) return;
+  userMsg('<p>' + t + '</p>');
+  if(kind === 'deliverability' || /deliverab/i.test(t)){ replyDiagnose(); }
+  else if(kind === 'agent' || /agent/i.test(t)){ replyAgent(); }
+  else if(kind === 'campaign' || /campaign/i.test(t)){ replyCampaign(); }
+  else if(/pause/i.test(t)){ replyPause(); }
+  else { replyGeneric(); }
+}
+
+/* ---- mode: today ---- */
+function replyPause(){
+  if(mode === 'today'){
+    botMsg('<p>Sure — here\'s how to pause campaigns:</p>' +
+      '<div class="guidecard"><ol><li>Go to <strong>Campaigns</strong> in the left sidebar.</li><li>Filter by <strong>Sender Account → ahmedabad-01</strong>.</li><li>Select each campaign and click <strong>Pause</strong>.</li></ol>' +
+      '<span class="gm">0 account changes</span><div class="q">Note: I can\'t confirm which are paused once you leave this chat.</div></div>');
+    return;
+  }
+  running = true;
+  var b = botMsg('<p>Pausing 3 campaigns on <strong>ahmedabad-01</strong>. Human-gated actions need one confirmation before anything changes.</p>');
+  var log = document.createElement('div');
+  log.className = 'runlog';
+  log.innerHTML = '<div class="runlog-h"><span class="live"></span>Pausing campaigns · ahmedabad-01</div>';
+  b.appendChild(log);
+  var steps = [
+    ['Finding campaigns on this sender', '3 active: Q3 Founders, Q3 RevOps US, Partner Push'],
+    ['Pausing Q3 Founders', 'was sending · 412 queued leads held'],
+    ['Pausing Q3 RevOps US', 'was sending · 208 queued leads held'],
+    ['Pausing Partner Push', 'was sending · 96 queued leads held']
+  ];
+  runSteps(log, steps, function(){
+    log.querySelector('.runlog-h').innerHTML =
+      '<span style="color:var(--ok);font-weight:900">✓</span> Done in 3.4s' +
+      '<span class="done-lab">0 errors</span>';
+    log.querySelector('.runlog-h').style.background = '#f6fdf9';
+    var card = document.createElement('div');
+    card.className = 'summary';
+    card.innerHTML =
+      '<div class="sh"><span class="ok-ic">✓</span> 3 campaigns paused on ahmedabad-01</div>' +
+      '<div class="stats"><span><b>716</b> queued leads held</span><span class="muted-c">Nothing was sent</span></div>' +
+      '<div class="acts"><button class="btn sm" id="undoPause">Resume all 3</button><button class="btn sm" id="openC">Open campaigns</button></div>';
+    b.appendChild(card);
+    document.getElementById('undoPause').addEventListener('click', function(){
+      card.innerHTML = '<div class="sh" style="color:#0b6b40"><span class="ok-ic">✓</span> Reverted — all 3 campaigns resumed</div><div class="stats"><span class="muted-c">They are sending again from where they left off.</span></div>';
+      toast('Reverted. 3 campaigns resumed.');
+    });
+    scroll(); running = false;
+  });
+}
+
+function replyDiagnose(){
+  if(mode === 'today'){
+    botMsg('<p>To diagnose a reply-rate drop, check these in order:</p>' +
+      '<div class="guidecard"><ol><li>Deliverability — check spam rates in <strong>Sending Servers</strong>.</li><li>Bounce rate — review <strong>Campaigns → Analytics</strong>.</li><li>Sequence length — compare step count to last month.</li></ol>' +
+      '<span class="gm">0 account changes</span><div class="q">If you paste the numbers here, I can help interpret them.</div></div>');
+    return;
+  }
+  running = true;
+  var b = botMsg('<p>Looking. I\'ll read the account, not ask you for the numbers.</p>');
+  var log = document.createElement('div');
+  log.className = 'runlog';
+  log.innerHTML = '<div class="runlog-h"><span class="live"></span>Reading Q3 Founders · last 30 days</div>';
+  b.appendChild(log);
+  var steps = [
+    ['Pulling send + reply volume', '1,284 sent · 47 replies · 3.7% (was 6.1% in August)'],
+    ['Checking deliverability', 'spam placement up 4.2% on 2 of 4 mailboxes'],
+    ['Comparing sequence steps', 'no change to copy or step count'],
+    ['Isolating the cause', 'ahmedabad-02 started a 2nd campaign on Aug 29 — volume up 61% on that mailbox']
+  ];
+  runSteps(log, steps, function(){
+    var card = document.createElement('div');
+    card.className = 'summary';
+    card.style.borderColor = '#fdefc7';
+    card.style.background = 'linear-gradient(180deg,#fffdf5,#fff)';
+    card.innerHTML =
+      '<div class="sh" style="color:#7a5a00"><span class="ok-ic" style="background:#e8a300">!</span> Cause found: mailbox contention on ahmedabad-02</div>' +
+      '<div class="stats"><span>Reply rate <b>6.1% → 3.7%</b></span><span>Spam placement <b>+4.2%</b></span><span class="muted-c">Copy unchanged</span></div>' +
+      '<div class="acts"><button class="btn primary sm" id="fixIt">Move the 2nd campaign to another sender</button><button class="btn sm">Show me the data</button></div>';
+    b.appendChild(card);
+    document.getElementById('fixIt').addEventListener('click', function(){
+      card.innerHTML = '<div class="sh" style="color:#0b6b40"><span class="ok-ic">✓</span> Moved Partner Push to mumbai-03 — 1,208 leads reassigned</div><div class="stats"><span class="muted-c">Volume per mailbox is now under the 28/day ceiling.</span></div><div class="acts"><button class="btn sm">Undo</button></div>';
+      toast('Reassigned. Run-log kept in this conversation.');
+    });
+    scroll(); running = false;
+  });
+}
+
+function replyGeneric(){
+  if(mode === 'today'){
+    botMsg('<p>Happy to help with that. Could you tell me more about what you\'re trying to do? I can walk you through the relevant part of the product step by step.</p><div class="meta-line" style="font-size:12px;color:#7c7c99">Nothing in your account has changed.</div>');
+    return;
+  }
+  botMsg('<p>I can do that inside Acme Co. Tell me the outcome you want and I\'ll either run it — showing each step — or tell you exactly why I can\'t.</p>');
+}
+
+function runSteps(log, steps, done){
+  var i = 0;
+  function next(){
+    if(i >= steps.length){
+      log.querySelector('.runlog-h').innerHTML = '<span style="color:var(--ok);font-weight:900">✓</span> Complete' + '<span class="done-lab">every step logged</span>';
+      done(); return;
+    }
+    var s = steps[i];
+    var row = document.createElement('div');
+    row.className = 'rstep active';
+    row.innerHTML = '<div class="glyph"><span class="tick"></span></div>' +
+      '<div><div class="sl">' + s[0] + '</div><div class="sd">' + s[1] + '</div></div>' +
+      '<div class="chev">▾</div>' +
+      '<div class="detail">' + (s[2] || s[1]) + '</div>';
+    row.addEventListener('click', function(){ row.classList.toggle('open'); });
+    log.appendChild(row);
+    scroll();
+    setTimeout(function(){
+      row.classList.remove('active'); row.classList.add('done');
+      row.querySelector('.glyph').textContent = '✓';
+      i++; next();
+    }, 780);
+  }
+  next();
+}
+
+/* ---- the import flow ---- */
+function startImport(){
+  if(running) return;
+  document.getElementById('dropzone').classList.remove('show');
+  userMsg('<p>Import this list to my Q3 Enterprise campaign.</p>' +
+    '<div class="filecard"><div class="fico">CSV</div><div><div class="fname">q3_enterprise_leads.csv</div><div class="fsub">2,847 rows · 11 columns · 240 KB</div></div></div>');
+
+  if(mode === 'today'){
+    setTimeout(function(){
+      botMsg('<p>Got it. Here\u2019s how to import this list:</p>' +
+        '<div class="guidecard">' +
+        '<ol><li>Go to <strong>Campaigns</strong> and open <strong>Q3 Enterprise</strong>.</li><li>Open the <strong>Leads</strong> tab and click <strong>Add Leads \u2192 Import CSV</strong>.</li><li>Upload the file, then map your columns to the lead fields.</li><li>Choose how to handle duplicates, then confirm the import.</li></ol>' +
+        '<span class="gm">0 account changes \u00b7 6 manual steps</span>' +
+        '<div class="q">Let me know once it\u2019s done and I\u2019ll help you spot-check it. I can\u2019t read the file from here.</div></div>' +
+        '<div class="meta-line" style="font-size:12px;color:#7c7c99">You are where you started, minus the time it took to read this.</div>');
+    }, 600);
+    return;
+  }
+
+  running = true;
+  setTimeout(function(){
+    var b = botMsg('<p>Reading <strong>q3_enterprise_leads.csv</strong> \u2014 2,847 rows, 11 columns. Mapping columns and checking this workspace first.</p>');
+    var log = document.createElement('div');
+    log.className = 'runlog';
+    log.innerHTML = '<div class="runlog-h"><span class="live"></span>Importing to Q3 Enterprise Campaign</div>';
+    b.appendChild(log);
+
+    var steps = [
+      ['File received', '2,847 rows detected \u00b7 11 columns \u00b7 UTF-8',
+       'Filename q3_enterprise_leads.csv<br>240 KB \u00b7 11 columns \u00b7 delimiter ","'],
+      ['Columns mapped', 'Email \u2192 email \u00b7 First Name \u2192 first_name \u00b7 Company \u2192 company_name \u00b7 Title \u2192 job_title',
+       '<table><tr><td>Email</td><td>email</td></tr><tr><td>First Name</td><td>first_name</td></tr><tr><td>Company</td><td>company_name</td></tr><tr><td>Title</td><td>job_title</td></tr><tr><td>Revenue Band</td><td>custom field</td></tr><tr><td>Tech Stack</td><td>custom field</td></tr></table>'],
+      ['Validated and deduplicated', '2,691 valid leads \u00b7 156 skipped: 89 duplicates, 42 invalid emails, 25 missing required fields',
+       '<table><tr><td>Duplicates against this workspace</td><td>89</td></tr><tr><td>Invalid or malformed email</td><td>42</td></tr><tr><td>Missing required field</td><td>25</td></tr><tr><td>Valid leads</td><td>2,691</td></tr></table>'],
+      ['Imported to Q3 Enterprise Campaign', '2,691 leads live \u00b7 0 errors']
+    ];
+    runSteps(log, steps, function(){
+      log.querySelector('.runlog-h').innerHTML =
+        '<span style="color:var(--ok);font-weight:900">\u2713</span> Imported in 71s' +
+        '<span class="done-lab">4 steps \u00b7 0 errors</span>';
+      log.querySelector('.runlog-h').style.background = '#f6fdf9';
+
+      var card = document.createElement('div');
+      card.className = 'summary';
+      card.innerHTML =
+        '<div class="sh"><span class="ok-ic">\u2713</span> 2,691 leads imported to Q3 Enterprise Campaign</div>' +
+        '<div class="stats"><span><b>2,691</b> imported</span><span><b>156</b> skipped</span><span class="muted-c">89 dup \u00b7 42 invalid \u00b7 25 missing</span><span class="muted-c">71s</span></div>' +
+        '<div class="memline">\u2726 Used 3 saved preferences <button id="viewPrefs">view</button></div>' +
+        '<div class="acts">' +
+          '<button class="btn ghost-danger sm" id="undoImp">\u21ba Undo Import</button>' +
+          '<button class="btn sm" id="skipped">View Skipped Rows</button>' +
+          '<button class="btn primary sm" id="openCamp">Open Campaign</button>' +
+        '</div>';
+      b.appendChild(card);
+
+      document.getElementById('viewPrefs').addEventListener('click', openMem);
+
+      document.getElementById('undoImp').addEventListener('click', function(){
+        card.style.borderColor = '#e6e4f0';
+        card.style.background = '#fbfaff';
+        card.innerHTML =
+          '<div class="sh" style="color:var(--ink)"><span class="ok-ic" style="background:#8b8ba3">\u21ba</span> Import reverted</div>' +
+          '<div class="stats"><span><b>2,691</b> leads removed from Q3 Enterprise Campaign</span><span class="muted-c">Nothing else changed \u00b7 campaign untouched</span></div>' +
+          '<div class="acts"><button class="btn sm" id="redo">Re-import</button></div>';
+        document.getElementById('redo').addEventListener('click', function(){ toast('This is a prototype \u2014 undo worked, that is the point.'); });
+        toast('Undone. One click, 1.2s.');
+      });
+      document.getElementById('skipped').addEventListener('click', function(){
+        toast('156 rows \u00b7 89 duplicates, 42 invalid, 25 missing \u2014 ready as CSV.');
+      });
+      document.getElementById('openCamp').addEventListener('click', function(){
+        toast('Opening Q3 Enterprise Campaign\u2026');
+      });
+
+      running = false;
+    });
+  }, 650);
+}
+
+/* ---- create a campaign ---- */
+function replyCampaign(){
+  if(mode === 'today'){
+    botMsg('<p>To create a campaign:</p>' +
+      '<div class="guidecard"><ol><li>Go to <strong>Campaigns \u2192 Create Campaign</strong>.</li><li>Name it, then pick your sending accounts.</li><li>Add sequence steps, then set a schedule.</li><li>Save it paused and add your leads.</li></ol>' +
+      '<span class="gm">0 account changes \u00b7 4 manual steps</span>' +
+      '<div class="q">I can\u2019t set it up for you, but I can answer questions about any of the fields.</div></div>');
+    return;
+  }
+  running = true;
+  var b = botMsg('<p>Creating <strong>Acme \u00b7 Q3 Enterprise</strong>, paused, using this workspace\u2019s naming and sending defaults.</p>');
+  var log = document.createElement('div');
+  log.className = 'runlog';
+  log.innerHTML = '<div class="runlog-h"><span class="live"></span>Creating campaign</div>';
+  b.appendChild(log);
+  var steps = [
+    ['Applying naming convention', 'Q3 \u00b7 Enterprise \u00b7 US \u00b7 v1 \u2014 from workspace memory'],
+    ['Attaching sender accounts', '3 mailboxes rotating \u00b7 28/day cap \u00b7 warmup on'],
+    ['Creating campaign', 'Saved as paused \u2014 nothing will send until you start it'],
+    ['Verifying', 'Campaign exists \u00b7 0 sequence steps \u00b7 0 leads']
+  ];
+  runSteps(log, steps, function(){
+    log.querySelector('.runlog-h').innerHTML = '<span style="color:var(--ok);font-weight:900">\u2713</span> Campaign created<span class="done-lab">4 steps \u00b7 0 errors</span>';
+    log.querySelector('.runlog-h').style.background = '#f6fdf9';
+    var card = document.createElement('div');
+    card.className = 'summary';
+    card.innerHTML =
+      '<div class="sh"><span class="ok-ic">\u2713</span> Acme \u00b7 Q3 Enterprise \u00b7 US \u00b7 v1 created (paused)</div>' +
+      '<div class="stats"><span><b>3</b> senders attached</span><span><b>28/day</b> per mailbox</span><span class="muted-c">No leads yet \u2014 import a list next</span></div>' +
+      '<div class="memline">\u2726 Used 3 saved preferences <button onclick="document.getElementById(\'openMem\').click()">view</button></div>' +
+      '<div class="acts"><button class="btn ghost-danger sm" onclick="this.textContent=\'Campaign deleted\';this.disabled=true">Delete campaign</button>' +
+      '<button class="btn primary sm" onclick="this.textContent=\'Opening\u2026\'">Open campaign</button></div>';
+    b.appendChild(card);
+    running = false;
+  });
+}
+
+/* ---- set up an agent ---- */
+function replyAgent(){
+  if(mode === 'today'){
+    botMsg('<p>Smart Agents can classify replies, book meetings, and route to your CRM. To create one:</p>' +
+      '<div class="guidecard"><ol><li>Open <strong>AI Team \u2192 AI Agents</strong>.</li><li>Click <strong>Create Agent</strong> and pick a template.</li><li>Configure triggers, conditions, and actions.</li><li>Choose the workspaces it should run in.</li></ol>' +
+      '<span class="gm">0 agents created \u00b7 4 manual steps</span>' +
+      '<div class="q">I can explain any of the configuration options, but I can\u2019t create the agent from here.</div></div>');
+    return;
+  }
+  botMsg('<p>Creating Agents from chat is <strong>Phase 2</strong>, not Phase 1 \u2014 I\u2019d rather tell you that than half-do it.</p>' +
+    '<p>What I can do right now in Acme Co:</p>' +
+    '<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:4px">' +
+    '<button class="btn sm" onclick="document.querySelector(\'#chips [data-act=campaign]\').click()">Create the campaign it would triage</button>' +
+    '<button class="btn sm" onclick="document.querySelector(\'#chips [data-act=import]\').click()">Import the leads it will run on</button>' +
+    '</div>' +
+    '<div class="meta-line" style="font-size:12px;color:#7c7c99">Phase 2 adds agent creation here, with the same run-log and undo.</div>');
+}
+</script>
+
+<script id="editScript">
+(function(){
+  var KEY = 'sa_report_edits_v1';
+  var root = document.getElementById('reportRoot');
+  var btn = document.getElementById('editToggle');
+  var statusEl = document.getElementById('editStatus');
+  var editing = false, tmr = null, store = false;
+
+  try { localStorage.setItem('__probe','1'); localStorage.removeItem('__probe'); store = true; } catch(e){ store = false; }
+
+  function note(msg){ if(statusEl) statusEl.textContent = msg; }
+
+  function restore(){
+    if(!store) { note('Autosave unavailable in this preview — use Save .html'); return; }
+    try{
+      var saved = localStorage.getItem(KEY);
+      if(saved){
+        root.innerHTML = saved;
+        note('Your earlier edits were restored');
+      } else { note('Autosave on'); }
+    }catch(e){ note('Could not restore edits'); }
+  }
+
+  function save(){
+    if(!store){ note('Autosave unavailable here — use Save .html'); return; }
+    try{
+      localStorage.setItem(KEY, root.innerHTML);
+      note('Saved \u00b7 ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}));
+    }catch(e){ note('Save failed — use Save .html'); }
+  }
+
+  function setEditing(on){
+    editing = on;
+    root.setAttribute('contenteditable', on ? 'true' : 'false');
+    root.spellcheck = on;
+    document.body.classList.toggle('editing', on);
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? '\u2713 Done' : '\u270e Edit';
+    document.getElementById('editbar').scrollIntoView({block:'nearest'});
+    if(on){ note(store ? 'Autosave on' : 'Autosave unavailable — use Save .html'); }
+  }
+
+  btn.addEventListener('click', function(){ setEditing(!editing); });
+  document.getElementById('doneEdit').addEventListener('click', function(){ setEditing(false); window.scrollTo({top:0,behavior:'smooth'}); });
+
+  root.addEventListener('input', function(){
+    if(!editing) return;
+    note('Saving\u2026');
+    clearTimeout(tmr);
+    tmr = setTimeout(save, 700);
+  });
+  root.addEventListener('blur', function(){ if(editing) save(); }, true);
+
+  /* reset — two-step, no native confirm (blocked in sandboxed previews) */
+  var resetBtn = document.getElementById('resetEdits'), armed = false, armTmr = null;
+  resetBtn.addEventListener('click', function(){
+    if(!armed){
+      armed = true; resetBtn.textContent = 'Click again to confirm';
+      armTmr = setTimeout(function(){ armed = false; resetBtn.textContent = 'Reset all edits'; }, 4000);
+      return;
+    }
+    clearTimeout(armTmr);
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    location.reload();
+  });
+
+  /* PDF */
+  document.getElementById('printBtn').addEventListener('click', function(){
+    if(editing) setEditing(false);
+    setTimeout(function(){ window.print(); }, 120);
+  });
+
+  /* export a clean, read-only copy with the edits baked in */
+  document.getElementById('saveFile').addEventListener('click', function(){
+    if(editing) save();
+    try{
+      var clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('[data-editui]').forEach(function(n){ n.remove(); });
+      var sc = clone.querySelector('#editScript');
+      if(sc) sc.remove();
+      clone.querySelectorAll('[contenteditable]').forEach(function(n){ n.removeAttribute('contenteditable'); });
+      var body = clone.querySelector('body');
+      if(body){ body.classList.remove('editing'); body.removeAttribute('contenteditable'); }
+      var rep = clone.querySelector('#view-report'), pro = clone.querySelector('#view-proto');
+      if(rep) rep.hidden = false;
+      if(pro) pro.hidden = true;
+      var tabs = clone.querySelectorAll('.tab');
+      if(tabs.length){ tabs[0].classList.add('active'); if(tabs[1]) tabs[1].classList.remove('active'); }
+
+      var html = '<!doctype html>\n' + clone.outerHTML;
+      var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'SmartLead-Smart-Assistant-From-Guide-to-Execution-Layer.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 3000);
+      note('Downloaded a clean copy with your edits');
+    }catch(e){
+      note('Download blocked in this preview \u2014 open the file directly to save');
+    }
+  });
+
+  /* keyboard */
+  document.addEventListener('keydown', function(e){
+    if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'e'){
+      e.preventDefault(); setEditing(!editing);
+    }
+    if(e.key === 'Escape' && editing){ setEditing(false); }
+    if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's'){
+      e.preventDefault(); document.getElementById('saveFile').click();
+    }
+  });
+
+  /* delegation so restored markup keeps working */
+  document.addEventListener('click', function(e){
+    var t = e.target.closest ? e.target.closest('#openProtoBtn, .goto-proto') : null;
+    if(!t) return;
+    e.preventDefault();
+    var tab = document.querySelector('.tab[data-view="proto"]');
+    if(tab) tab.click();
+  });
+
+  /* leaving the report exits editing */
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){ if(editing) setEditing(false); });
+  });
+
+  restore();
+  root.setAttribute('contenteditable','false');
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "Smart Assistant \u2014 Prototype Builder",
+  "id": "smartlead-sa-prototype-builder",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ]
+}
